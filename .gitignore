@@ -1,0 +1,35 @@
+# 1. 忽略模型权重文件
+*.pth
+*.pt
+*.ckpt
+*.bin
+*.onnx
+*.mp4
+JanusVLN_Extra/
+JanusVLN_Ablation_NoTopo/
+JanusVLN_Ablation_WithTopo/
+JanusVLN_Base_DryRun/
+JanusVLN_Overfit_Test_4Cards/
+JanusVLN_Real_Train_4Cards/
+checkpoints/
+debug_frames/
+habitat-lab/
+evaluation_WithTopo_results/
+
+# 2. 忽略数据集和输出结果文件夹（假设你的数据集放在 data 文件夹下）
+data/
+datasets/
+outputs/
+results/
+
+# 3. 忽略日志文件
+logs/
+runs/
+*.log
+
+# 4. 忽略 Python 缓存和虚拟环境
+__pycache__/
+*.pyc
+.env
+venv/
+.venv/

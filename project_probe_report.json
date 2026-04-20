@@ -1,0 +1,1006 @@
+{
+    "image_params": [
+        {
+            "file": "src/dagger.py",
+            "line": 56,
+            "code": "from transformers import AutoProcessor, Qwen2_5_VLForConditionalGeneration\n\n# 固定数值变量，避免None\nmin_pixels: int = 28 * 28\nmax_pixels: int = 1605632\n\nDATASET = \"rxr\"\n"
+        },
+        {
+            "file": "src/dagger.py",
+            "line": 57,
+            "code": "\n# 固定数值变量，避免None\nmin_pixels: int = 28 * 28\nmax_pixels: int = 1605632\n\nDATASET = \"rxr\"\nCONFIG_PATH = \"./config/vln_r2r.yaml\"\n"
+        },
+        {
+            "file": "src/dagger.py",
+            "line": 509,
+            "code": "        # 强制传入整数参数\n        self.processor = AutoProcessor.from_pretrained(\n            pretrained, \n            max_pixels=int(max_pixels),\n            min_pixels=int(min_pixels),\n            padding_side=\"left\"\n        )\n"
+        },
+        {
+            "file": "src/dagger.py",
+            "line": 510,
+            "code": "        self.processor = AutoProcessor.from_pretrained(\n            pretrained, \n            max_pixels=int(max_pixels),\n            min_pixels=int(min_pixels),\n            padding_side=\"left\"\n        )\n        \n"
+        },
+        {
+            "file": "src/dagger.py",
+            "line": 514,
+            "code": "            padding_side=\"left\"\n        )\n        \n        # 初始化时强制设置patch_size/merge_size\n        self.processor.image_processor.patch_size = 14\n        self.processor.image_processor.merge_size = 2\n        \n"
+        },
+        {
+            "file": "src/dagger.py",
+            "line": 515,
+            "code": "        )\n        \n        # 初始化时强制设置patch_size/merge_size\n        self.processor.image_processor.patch_size = 14\n        self.processor.image_processor.merge_size = 2\n        \n        self.device = device\n"
+        },
+        {
+            "file": "src/dagger.py",
+            "line": 516,
+            "code": "        \n        # 初始化时强制设置patch_size/merge_size\n        self.processor.image_processor.patch_size = 14\n        self.processor.image_processor.merge_size = 2\n        \n        self.device = device\n\n"
+        },
+        {
+            "file": "src/dagger.py",
+            "line": 531,
+            "code": "    ):\n        try:\n            # ========== 终极修复：强制赋值+调试打印 ==========\n            # 1. 强制覆盖patch_size/merge_size，无视原有值\n            self.processor.image_processor.patch_size = 14  # 固定整数，永不None\n            self.processor.image_processor.merge_size = 2   # 固定整数，永不None\n            # 2. 读取并强制转为整数\n"
+        },
+        {
+            "file": "src/dagger.py",
+            "line": 532,
+            "code": "        try:\n            # ========== 终极修复：强制赋值+调试打印 ==========\n            # 1. 强制覆盖patch_size/merge_size，无视原有值\n            self.processor.image_processor.patch_size = 14  # 固定整数，永不None\n            self.processor.image_processor.merge_size = 2   # 固定整数，永不None\n            # 2. 读取并强制转为整数\n            patch_size = int(self.processor.image_processor.patch_size)\n"
+        },
+        {
+            "file": "src/dagger.py",
+            "line": 533,
+            "code": "            # ========== 终极修复：强制赋值+调试打印 ==========\n            # 1. 强制覆盖patch_size/merge_size，无视原有值\n            self.processor.image_processor.patch_size = 14  # 固定整数，永不None\n            self.processor.image_processor.merge_size = 2   # 固定整数，永不None\n            # 2. 读取并强制转为整数\n            patch_size = int(self.processor.image_processor.patch_size)\n            merge_size = int(self.processor.image_processor.merge_size)\n"
+        },
+        {
+            "file": "src/dagger.py",
+            "line": 535,
+            "code": "            self.processor.image_processor.patch_size = 14  # 固定整数，永不None\n            self.processor.image_processor.merge_size = 2   # 固定整数，永不None\n            # 2. 读取并强制转为整数\n            patch_size = int(self.processor.image_processor.patch_size)\n            merge_size = int(self.processor.image_processor.merge_size)\n            # 3. 调试打印（确认变量值，可后续删除）\n            print(f\"[调试] patch_size={patch_size}, merge_size={merge_size}, type={type(patch_size)}\")\n"
+        },
+        {
+            "file": "src/dagger.py",
+            "line": 536,
+            "code": "            self.processor.image_processor.merge_size = 2   # 固定整数，永不None\n            # 2. 读取并强制转为整数\n            patch_size = int(self.processor.image_processor.patch_size)\n            merge_size = int(self.processor.image_processor.merge_size)\n            # 3. 调试打印（确认变量值，可后续删除）\n            print(f\"[调试] patch_size={patch_size}, merge_size={merge_size}, type={type(patch_size)}\")\n            \n"
+        },
+        {
+            "file": "src/dagger.py",
+            "line": 538,
+            "code": "            patch_size = int(self.processor.image_processor.patch_size)\n            merge_size = int(self.processor.image_processor.merge_size)\n            # 3. 调试打印（确认变量值，可后续删除）\n            print(f\"[调试] patch_size={patch_size}, merge_size={merge_size}, type={type(patch_size)}\")\n            \n            # step_id强制为整数\n            step_id = int(step_id) if step_id is not None else 0\n"
+        },
+        {
+            "file": "src/dagger.py",
+            "line": 602,
+            "code": "                    # 所有变量先校验，再计算\n                    width = int(width) if width is not None else 0\n                    height = int(height) if height is not None else 0\n                    patch_size = patch_size if patch_size > 0 else 14\n                    merge_size = merge_size if merge_size > 0 else 2\n\n                    # 安全计算：避免所有None/0的情况\n"
+        },
+        {
+            "file": "src/dagger.py",
+            "line": 603,
+            "code": "                    width = int(width) if width is not None else 0\n                    height = int(height) if height is not None else 0\n                    patch_size = patch_size if patch_size > 0 else 14\n                    merge_size = merge_size if merge_size > 0 else 2\n\n                    # 安全计算：避免所有None/0的情况\n                    try:\n"
+        },
+        {
+            "file": "src/dagger.py",
+            "line": 607,
+            "code": "\n                    # 安全计算：避免所有None/0的情况\n                    try:\n                        width_div = width // patch_size\n                        width_mod = width_div % merge_size\n                        if width_mod > 0:\n                            width = width - width_mod * patch_size\n"
+        },
+        {
+            "file": "src/dagger.py",
+            "line": 608,
+            "code": "                    # 安全计算：避免所有None/0的情况\n                    try:\n                        width_div = width // patch_size\n                        width_mod = width_div % merge_size\n                        if width_mod > 0:\n                            width = width - width_mod * patch_size\n                    except:\n"
+        },
+        {
+            "file": "src/dagger.py",
+            "line": 610,
+            "code": "                        width_div = width // patch_size\n                        width_mod = width_div % merge_size\n                        if width_mod > 0:\n                            width = width - width_mod * patch_size\n                    except:\n                        width = 0  # 出错时强制设为0，避免崩溃\n                    \n"
+        },
+        {
+            "file": "src/dagger.py",
+            "line": 615,
+            "code": "                        width = 0  # 出错时强制设为0，避免崩溃\n                    \n                    try:\n                        height_div = height // patch_size\n                        height_mod = height_div % merge_size\n                        if height_mod > 0:\n                            height = height - height_mod * patch_size\n"
+        },
+        {
+            "file": "src/dagger.py",
+            "line": 616,
+            "code": "                    \n                    try:\n                        height_div = height // patch_size\n                        height_mod = height_div % merge_size\n                        if height_mod > 0:\n                            height = height - height_mod * patch_size\n                    except:\n"
+        },
+        {
+            "file": "src/dagger.py",
+            "line": 618,
+            "code": "                        height_div = height // patch_size\n                        height_mod = height_div % merge_size\n                        if height_mod > 0:\n                            height = height - height_mod * patch_size\n                    except:\n                        height = 0  # 出错时强制设为0，避免崩溃\n\n"
+        },
+        {
+            "file": "src/evaluation.py",
+            "line": 48,
+            "code": "from transformers import AutoProcessor, Qwen2_5_VLForConditionalGeneration\n\n\nmin_pixels: int = 28 * 28\nmax_pixels: int = 1605632\n\n\n"
+        },
+        {
+            "file": "src/evaluation.py",
+            "line": 49,
+            "code": "\n\nmin_pixels: int = 28 * 28\nmax_pixels: int = 1605632\n\n\ndef set_seed(seed: int):\n"
+        },
+        {
+            "file": "src/evaluation.py",
+            "line": 264,
+            "code": "        ).eval()\n        \n        self.tokenizer = AutoTokenizer.from_pretrained(pretrained, padding_side=\"left\")\n        self.processor = AutoProcessor.from_pretrained(pretrained, max_pixels=max_pixels, min_pixels=min_pixels, padding_side=\"left\")\n        \n        self.device = device\n\n"
+        },
+        {
+            "file": "src/evaluation.py",
+            "line": 285,
+            "code": "                }\n            ]\n        context = f\"These images are your historical observations and your current observation.\\n Your task is to {task} \\n You should take one of the following actions:\\n MOVE_FORWARD\\n TURN_LEFT\\n TURN_RIGHT\\n STOP.\"\n        patch_size = self.processor.image_processor.patch_size\n        merge_size = self.processor.image_processor.merge_size\n        for i in enumerate([task]):\n    \n"
+        },
+        {
+            "file": "src/evaluation.py",
+            "line": 286,
+            "code": "            ]\n        context = f\"These images are your historical observations and your current observation.\\n Your task is to {task} \\n You should take one of the following actions:\\n MOVE_FORWARD\\n TURN_LEFT\\n TURN_RIGHT\\n STOP.\"\n        patch_size = self.processor.image_processor.patch_size\n        merge_size = self.processor.image_processor.merge_size\n        for i in enumerate([task]):\n    \n            visual = observations\n"
+        },
+        {
+            "file": "src/evaluation.py",
+            "line": 336,
+            "code": "                    cur_images_vggt.append(image)\n\n                _, height, width = image.shape\n                if (width // patch_size) % merge_size > 0:\n                    width = width - (width // patch_size) % merge_size * patch_size\n                if (height // patch_size) % merge_size > 0:\n                    height = height - (height // patch_size) % merge_size * patch_size\n"
+        },
+        {
+            "file": "src/evaluation.py",
+            "line": 337,
+            "code": "\n                _, height, width = image.shape\n                if (width // patch_size) % merge_size > 0:\n                    width = width - (width // patch_size) % merge_size * patch_size\n                if (height // patch_size) % merge_size > 0:\n                    height = height - (height // patch_size) % merge_size * patch_size\n                image = image[:, :height, :width]\n"
+        },
+        {
+            "file": "src/evaluation.py",
+            "line": 338,
+            "code": "                _, height, width = image.shape\n                if (width // patch_size) % merge_size > 0:\n                    width = width - (width // patch_size) % merge_size * patch_size\n                if (height // patch_size) % merge_size > 0:\n                    height = height - (height // patch_size) % merge_size * patch_size\n                image = image[:, :height, :width]\n                image_inputs.append(image)\n"
+        },
+        {
+            "file": "src/evaluation.py",
+            "line": 339,
+            "code": "                if (width // patch_size) % merge_size > 0:\n                    width = width - (width // patch_size) % merge_size * patch_size\n                if (height // patch_size) % merge_size > 0:\n                    height = height - (height // patch_size) % merge_size * patch_size\n                image = image[:, :height, :width]\n                image_inputs.append(image)\n    \n"
+        },
+        {
+            "file": "src/qwen_vl/train/argument.py",
+            "line": 25,
+            "code": "    video_min_frames: Optional[int] = field(default=4)\n    data_flatten: bool = field(default=False)\n    base_interval: int = field(default=2)\n    max_pixels: int = field(default=28 * 28 * 576)\n    min_pixels: int = field(default=28 * 28 * 16)\n    video_max_frame_pixels: int = field(default=32 * 28 * 28)\n    video_min_frame_pixels: int = field(default=4 * 28 * 28)\n"
+        },
+        {
+            "file": "src/qwen_vl/train/argument.py",
+            "line": 26,
+            "code": "    data_flatten: bool = field(default=False)\n    base_interval: int = field(default=2)\n    max_pixels: int = field(default=28 * 28 * 576)\n    min_pixels: int = field(default=28 * 28 * 16)\n    video_max_frame_pixels: int = field(default=32 * 28 * 28)\n    video_min_frame_pixels: int = field(default=4 * 28 * 28)\n    max_samples: int = field(default=-1)\n"
+        },
+        {
+            "file": "src/qwen_vl/train/argument.py",
+            "line": 27,
+            "code": "    base_interval: int = field(default=2)\n    max_pixels: int = field(default=28 * 28 * 576)\n    min_pixels: int = field(default=28 * 28 * 16)\n    video_max_frame_pixels: int = field(default=32 * 28 * 28)\n    video_min_frame_pixels: int = field(default=4 * 28 * 28)\n    max_samples: int = field(default=-1)\n    shuffle: bool = field(default=True)\n"
+        },
+        {
+            "file": "src/qwen_vl/model/processing_qwen2_5_vl.py",
+            "line": 39,
+            "code": "\n\nclass Qwen2_5_VLImagesKwargs(ImagesKwargs):\n    min_pixels: Optional[int]\n    max_pixels: Optional[int]\n    patch_size: Optional[int]\n    temporal_patch_size: Optional[int]\n"
+        },
+        {
+            "file": "src/qwen_vl/model/processing_qwen2_5_vl.py",
+            "line": 40,
+            "code": "\nclass Qwen2_5_VLImagesKwargs(ImagesKwargs):\n    min_pixels: Optional[int]\n    max_pixels: Optional[int]\n    patch_size: Optional[int]\n    temporal_patch_size: Optional[int]\n    merge_size: Optional[int]\n"
+        },
+        {
+            "file": "src/qwen_vl/model/processing_qwen2_5_vl.py",
+            "line": 41,
+            "code": "class Qwen2_5_VLImagesKwargs(ImagesKwargs):\n    min_pixels: Optional[int]\n    max_pixels: Optional[int]\n    patch_size: Optional[int]\n    temporal_patch_size: Optional[int]\n    merge_size: Optional[int]\n\n"
+        },
+        {
+            "file": "src/qwen_vl/model/processing_qwen2_5_vl.py",
+            "line": 42,
+            "code": "    min_pixels: Optional[int]\n    max_pixels: Optional[int]\n    patch_size: Optional[int]\n    temporal_patch_size: Optional[int]\n    merge_size: Optional[int]\n\n\n"
+        },
+        {
+            "file": "src/qwen_vl/model/processing_qwen2_5_vl.py",
+            "line": 43,
+            "code": "    max_pixels: Optional[int]\n    patch_size: Optional[int]\n    temporal_patch_size: Optional[int]\n    merge_size: Optional[int]\n\n\nclass Qwen2_5_VLProcessorKwargs(ProcessingKwargs, total=False):\n"
+        },
+        {
+            "file": "src/qwen_vl/model/processing_qwen2_5_vl.py",
+            "line": 144,
+            "code": "\n            fps = output_kwargs[\"videos_kwargs\"].pop(\"fps\", 2.0)\n            if isinstance(fps, (int, float)):\n                second_per_grid_ts = [self.image_processor.temporal_patch_size / fps] * len(video_grid_thw)\n            elif hasattr(fps, \"__len__\") and len(fps) == len(video_grid_thw):\n                second_per_grid_ts = [self.image_processor.temporal_patch_size / tmp for tmp in fps]\n            else:\n"
+        },
+        {
+            "file": "src/qwen_vl/model/processing_qwen2_5_vl.py",
+            "line": 146,
+            "code": "            if isinstance(fps, (int, float)):\n                second_per_grid_ts = [self.image_processor.temporal_patch_size / fps] * len(video_grid_thw)\n            elif hasattr(fps, \"__len__\") and len(fps) == len(video_grid_thw):\n                second_per_grid_ts = [self.image_processor.temporal_patch_size / tmp for tmp in fps]\n            else:\n                raise ValueError(\n                    f\"The length of fps ({len(fps) if hasattr(fps, '__len__') else fps}) must be equal to the length of video_grid_thw ({len(video_grid_thw)}) or fps should be a single number.\"\n"
+        },
+        {
+            "file": "src/qwen_vl/model/processing_qwen2_5_vl.py",
+            "line": 161,
+            "code": "            text = [text]\n\n        if image_grid_thw is not None:\n            merge_length = self.image_processor.merge_size**2\n            index = 0\n            for i in range(len(text)):\n                while self.image_token in text[i]:\n"
+        },
+        {
+            "file": "src/qwen_vl/model/processing_qwen2_5_vl.py",
+            "line": 174,
+            "code": "                text[i] = text[i].replace(\"<|placeholder|>\", self.image_token)\n\n        if video_grid_thw is not None:\n            merge_length = self.image_processor.merge_size**2\n            index = 0\n            for i in range(len(text)):\n                while self.video_token in text[i]:\n"
+        },
+        {
+            "file": "src/qwen_vl/model/modeling_qwen2_5_vl.py",
+            "line": 94,
+            "code": "class Qwen2_5_VisionPatchEmbed(nn.Module):\n    def __init__(\n        self,\n        patch_size: int = 14,\n        temporal_patch_size: int = 2,\n        in_channels: int = 3,\n        embed_dim: int = 1152,\n"
+        },
+        {
+            "file": "src/qwen_vl/model/modeling_qwen2_5_vl.py",
+            "line": 95,
+            "code": "    def __init__(\n        self,\n        patch_size: int = 14,\n        temporal_patch_size: int = 2,\n        in_channels: int = 3,\n        embed_dim: int = 1152,\n    ) -> None:\n"
+        },
+        {
+            "file": "src/qwen_vl/model/modeling_qwen2_5_vl.py",
+            "line": 100,
+            "code": "        embed_dim: int = 1152,\n    ) -> None:\n        super().__init__()\n        self.patch_size = patch_size\n        self.temporal_patch_size = temporal_patch_size\n        self.in_channels = in_channels\n        self.embed_dim = embed_dim\n"
+        },
+        {
+            "file": "src/qwen_vl/model/modeling_qwen2_5_vl.py",
+            "line": 101,
+            "code": "    ) -> None:\n        super().__init__()\n        self.patch_size = patch_size\n        self.temporal_patch_size = temporal_patch_size\n        self.in_channels = in_channels\n        self.embed_dim = embed_dim\n\n"
+        },
+        {
+            "file": "src/qwen_vl/model/modeling_qwen2_5_vl.py",
+            "line": 105,
+            "code": "        self.in_channels = in_channels\n        self.embed_dim = embed_dim\n\n        kernel_size = [temporal_patch_size, patch_size, patch_size]\n        self.proj = nn.Conv3d(in_channels, embed_dim, kernel_size=kernel_size, stride=kernel_size, bias=False)\n\n    def forward(self, hidden_states: torch.Tensor) -> torch.Tensor:\n"
+        },
+        {
+            "file": "src/qwen_vl/model/modeling_qwen2_5_vl.py",
+            "line": 111,
+            "code": "    def forward(self, hidden_states: torch.Tensor) -> torch.Tensor:\n        target_dtype = self.proj.weight.dtype\n        hidden_states = hidden_states.view(\n            -1, self.in_channels, self.temporal_patch_size, self.patch_size, self.patch_size\n        )\n        hidden_states = self.proj(hidden_states.to(dtype=target_dtype)).view(-1, self.embed_dim)\n        return hidden_states\n"
+        },
+        {
+            "file": "src/qwen_vl/model/modeling_qwen2_5_vl.py",
+            "line": 150,
+            "code": "\n\nclass VGGTMerger(nn.Module):\n    def __init__(self, output_dim: int, hidden_dim: int, context_dim: int, spatial_merge_size: int = 2) -> None:\n        super().__init__()\n        self.input_dim = context_dim * (spatial_merge_size**2)\n        self.hidden_dim = hidden_dim\n"
+        },
+        {
+            "file": "src/qwen_vl/model/modeling_qwen2_5_vl.py",
+            "line": 152,
+            "code": "class VGGTMerger(nn.Module):\n    def __init__(self, output_dim: int, hidden_dim: int, context_dim: int, spatial_merge_size: int = 2) -> None:\n        super().__init__()\n        self.input_dim = context_dim * (spatial_merge_size**2)\n        self.hidden_dim = hidden_dim\n        self.output_dim = output_dim\n        self.ln_q = Qwen2RMSNorm(context_dim, eps=1e-6)\n"
+        },
+        {
+            "file": "src/qwen_vl/model/modeling_qwen2_5_vl.py",
+            "line": 168,
+            "code": "\n\nclass Qwen2_5_VLPatchMerger(nn.Module):\n    def __init__(self, dim: int, context_dim: int, spatial_merge_size: int = 2) -> None:\n        super().__init__()\n        self.hidden_size = context_dim * (spatial_merge_size**2)\n        self.ln_q = Qwen2RMSNorm(context_dim, eps=1e-6)\n"
+        },
+        {
+            "file": "src/qwen_vl/model/modeling_qwen2_5_vl.py",
+            "line": 170,
+            "code": "class Qwen2_5_VLPatchMerger(nn.Module):\n    def __init__(self, dim: int, context_dim: int, spatial_merge_size: int = 2) -> None:\n        super().__init__()\n        self.hidden_size = context_dim * (spatial_merge_size**2)\n        self.ln_q = Qwen2RMSNorm(context_dim, eps=1e-6)\n        self.mlp = nn.Sequential(\n            nn.Linear(self.hidden_size, self.hidden_size),\n"
+        },
+        {
+            "file": "src/qwen_vl/model/modeling_qwen2_5_vl.py",
+            "line": 431,
+            "code": "\n    def __init__(self, config, *inputs, **kwargs) -> None:\n        super().__init__(config, *inputs, **kwargs)\n        self.spatial_merge_size = config.spatial_merge_size\n        self.patch_size = config.patch_size\n        self.fullatt_block_indexes = config.fullatt_block_indexes\n        self.window_size = config.window_size\n"
+        },
+        {
+            "file": "src/qwen_vl/model/modeling_qwen2_5_vl.py",
+            "line": 432,
+            "code": "    def __init__(self, config, *inputs, **kwargs) -> None:\n        super().__init__(config, *inputs, **kwargs)\n        self.spatial_merge_size = config.spatial_merge_size\n        self.patch_size = config.patch_size\n        self.fullatt_block_indexes = config.fullatt_block_indexes\n        self.window_size = config.window_size\n        self.spatial_merge_unit = self.spatial_merge_size * self.spatial_merge_size\n"
+        },
+        {
+            "file": "src/qwen_vl/model/modeling_qwen2_5_vl.py",
+            "line": 435,
+            "code": "        self.patch_size = config.patch_size\n        self.fullatt_block_indexes = config.fullatt_block_indexes\n        self.window_size = config.window_size\n        self.spatial_merge_unit = self.spatial_merge_size * self.spatial_merge_size\n\n        self.patch_embed = Qwen2_5_VisionPatchEmbed(\n            patch_size=config.patch_size,\n"
+        },
+        {
+            "file": "src/qwen_vl/model/modeling_qwen2_5_vl.py",
+            "line": 438,
+            "code": "        self.spatial_merge_unit = self.spatial_merge_size * self.spatial_merge_size\n\n        self.patch_embed = Qwen2_5_VisionPatchEmbed(\n            patch_size=config.patch_size,\n            temporal_patch_size=config.temporal_patch_size,\n            in_channels=config.in_channels,\n            embed_dim=config.hidden_size,\n"
+        },
+        {
+            "file": "src/qwen_vl/model/modeling_qwen2_5_vl.py",
+            "line": 439,
+            "code": "\n        self.patch_embed = Qwen2_5_VisionPatchEmbed(\n            patch_size=config.patch_size,\n            temporal_patch_size=config.temporal_patch_size,\n            in_channels=config.in_channels,\n            embed_dim=config.hidden_size,\n        )\n"
+        },
+        {
+            "file": "src/qwen_vl/model/modeling_qwen2_5_vl.py",
+            "line": 453,
+            "code": "        self.merger = Qwen2_5_VLPatchMerger(\n            dim=config.out_hidden_size,\n            context_dim=config.hidden_size,\n            spatial_merge_size=config.spatial_merge_size,\n        )\n        self.gradient_checkpointing = False\n\n"
+        },
+        {
+            "file": "src/qwen_vl/model/modeling_qwen2_5_vl.py",
+            "line": 462,
+            "code": "        for t, h, w in grid_thw:\n            hpos_ids = torch.arange(h).unsqueeze(1).expand(-1, w)\n            hpos_ids = hpos_ids.reshape(\n                h // self.spatial_merge_size,\n                self.spatial_merge_size,\n                w // self.spatial_merge_size,\n                self.spatial_merge_size,\n"
+        },
+        {
+            "file": "src/qwen_vl/model/modeling_qwen2_5_vl.py",
+            "line": 463,
+            "code": "            hpos_ids = torch.arange(h).unsqueeze(1).expand(-1, w)\n            hpos_ids = hpos_ids.reshape(\n                h // self.spatial_merge_size,\n                self.spatial_merge_size,\n                w // self.spatial_merge_size,\n                self.spatial_merge_size,\n            )\n"
+        },
+        {
+            "file": "src/qwen_vl/model/modeling_qwen2_5_vl.py",
+            "line": 464,
+            "code": "            hpos_ids = hpos_ids.reshape(\n                h // self.spatial_merge_size,\n                self.spatial_merge_size,\n                w // self.spatial_merge_size,\n                self.spatial_merge_size,\n            )\n            hpos_ids = hpos_ids.permute(0, 2, 1, 3)\n"
+        },
+        {
+            "file": "src/qwen_vl/model/modeling_qwen2_5_vl.py",
+            "line": 465,
+            "code": "                h // self.spatial_merge_size,\n                self.spatial_merge_size,\n                w // self.spatial_merge_size,\n                self.spatial_merge_size,\n            )\n            hpos_ids = hpos_ids.permute(0, 2, 1, 3)\n            hpos_ids = hpos_ids.flatten()\n"
+        },
+        {
+            "file": "src/qwen_vl/model/modeling_qwen2_5_vl.py",
+            "line": 472,
+            "code": "\n            wpos_ids = torch.arange(w).unsqueeze(0).expand(h, -1)\n            wpos_ids = wpos_ids.reshape(\n                h // self.spatial_merge_size,\n                self.spatial_merge_size,\n                w // self.spatial_merge_size,\n                self.spatial_merge_size,\n"
+        },
+        {
+            "file": "src/qwen_vl/model/modeling_qwen2_5_vl.py",
+            "line": 473,
+            "code": "            wpos_ids = torch.arange(w).unsqueeze(0).expand(h, -1)\n            wpos_ids = wpos_ids.reshape(\n                h // self.spatial_merge_size,\n                self.spatial_merge_size,\n                w // self.spatial_merge_size,\n                self.spatial_merge_size,\n            )\n"
+        },
+        {
+            "file": "src/qwen_vl/model/modeling_qwen2_5_vl.py",
+            "line": 474,
+            "code": "            wpos_ids = wpos_ids.reshape(\n                h // self.spatial_merge_size,\n                self.spatial_merge_size,\n                w // self.spatial_merge_size,\n                self.spatial_merge_size,\n            )\n            wpos_ids = wpos_ids.permute(0, 2, 1, 3)\n"
+        },
+        {
+            "file": "src/qwen_vl/model/modeling_qwen2_5_vl.py",
+            "line": 475,
+            "code": "                h // self.spatial_merge_size,\n                self.spatial_merge_size,\n                w // self.spatial_merge_size,\n                self.spatial_merge_size,\n            )\n            wpos_ids = wpos_ids.permute(0, 2, 1, 3)\n            wpos_ids = wpos_ids.flatten()\n"
+        },
+        {
+            "file": "src/qwen_vl/model/modeling_qwen2_5_vl.py",
+            "line": 490,
+            "code": "        window_index: list = []\n        cu_window_seqlens: list = [0]\n        window_index_id = 0\n        vit_merger_window_size = self.window_size // self.spatial_merge_size // self.patch_size\n\n        for grid_t, grid_h, grid_w in grid_thw:\n            llm_grid_h, llm_grid_w = (\n"
+        },
+        {
+            "file": "src/qwen_vl/model/modeling_qwen2_5_vl.py",
+            "line": 494,
+            "code": "\n        for grid_t, grid_h, grid_w in grid_thw:\n            llm_grid_h, llm_grid_w = (\n                grid_h // self.spatial_merge_size,\n                grid_w // self.spatial_merge_size,\n            )\n            index = torch.arange(grid_t * llm_grid_h * llm_grid_w).reshape(grid_t, llm_grid_h, llm_grid_w)\n"
+        },
+        {
+            "file": "src/qwen_vl/model/modeling_qwen2_5_vl.py",
+            "line": 495,
+            "code": "        for grid_t, grid_h, grid_w in grid_thw:\n            llm_grid_h, llm_grid_w = (\n                grid_h // self.spatial_merge_size,\n                grid_w // self.spatial_merge_size,\n            )\n            index = torch.arange(grid_t * llm_grid_h * llm_grid_w).reshape(grid_t, llm_grid_h, llm_grid_w)\n            pad_h = vit_merger_window_size - llm_grid_h % vit_merger_window_size\n"
+        },
+        {
+            "file": "src/qwen_vl/model/modeling_qwen2_5_vl.py",
+            "line": 1671,
+            "code": "            output_dim=config.hidden_size,\n            hidden_dim=getattr(config, \"vggt_merger_hidden_dim\", 4096),\n            context_dim=2048,\n            spatial_merge_size=config.vision_config.spatial_merge_size,\n        )\n        self.config.reference_frame = getattr(config, \"reference_frame\", \"first\")\n        self.lam = getattr(config, \"lam\", 0.2)\n"
+        },
+        {
+            "file": "src/qwen_vl/model/modeling_qwen2_5_vl.py",
+            "line": 1762,
+            "code": "                We also have some important parameters:\n                fps (Frames Per Second): The video's frame rate, set to 1. This means one frame is processed each second.\n                tokens_per_second: This is a crucial parameter. It dictates how many \"time-steps\" or \"temporal tokens\" are conceptually packed into a one-second interval of the video. In this case, we have 25 tokens per second. So each second of the video will be represented with 25 separate time points. It essentially defines the temporal granularity.\n                temporal_patch_size: The number of frames that compose one temporal patch. Here, it's 2 frames.\n                interval: The step size for the temporal position IDs, calculated as tokens_per_second * temporal_patch_size / fps. In this case, 25 * 2 / 1 = 50. This means that each temporal patch will be have a difference of 50 in the temporal position IDs.\n                input_ids: [V V V V V V V V V V V V T T T T T], here V is for vision.\n                vision temporal position_ids: [0, 0, 0, 0, 50, 50, 50, 50, 100, 100, 100, 100]\n"
+        },
+        {
+            "file": "src/qwen_vl/model/modeling_qwen2_5_vl.py",
+            "line": 1763,
+            "code": "                fps (Frames Per Second): The video's frame rate, set to 1. This means one frame is processed each second.\n                tokens_per_second: This is a crucial parameter. It dictates how many \"time-steps\" or \"temporal tokens\" are conceptually packed into a one-second interval of the video. In this case, we have 25 tokens per second. So each second of the video will be represented with 25 separate time points. It essentially defines the temporal granularity.\n                temporal_patch_size: The number of frames that compose one temporal patch. Here, it's 2 frames.\n                interval: The step size for the temporal position IDs, calculated as tokens_per_second * temporal_patch_size / fps. In this case, 25 * 2 / 1 = 50. This means that each temporal patch will be have a difference of 50 in the temporal position IDs.\n                input_ids: [V V V V V V V V V V V V T T T T T], here V is for vision.\n                vision temporal position_ids: [0, 0, 0, 0, 50, 50, 50, 50, 100, 100, 100, 100]\n                vision height position_ids: [0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 1, 1]\n"
+        },
+        {
+            "file": "src/qwen_vl/model/modeling_qwen2_5_vl.py",
+            "line": 1793,
+            "code": "            position_ids (`torch.LongTensor` of shape `(3, batch_size, sequence_length)`)\n            mrope_position_deltas (`torch.Tensor` of shape `(batch_size)`)\n        \"\"\"\n        spatial_merge_size = self.config.vision_config.spatial_merge_size\n        image_token_id = self.config.image_token_id\n        video_token_id = self.config.video_token_id\n        vision_start_token_id = self.config.vision_start_token_id\n"
+        },
+        {
+            "file": "src/qwen_vl/model/modeling_qwen2_5_vl.py",
+            "line": 1857,
+            "code": "                        ed = ed_video\n                    llm_grid_t, llm_grid_h, llm_grid_w = (\n                        t.item(),\n                        h.item() // spatial_merge_size,\n                        w.item() // spatial_merge_size,\n                    )\n                    text_len = ed - st\n"
+        },
+        {
+            "file": "src/qwen_vl/model/modeling_qwen2_5_vl.py",
+            "line": 1858,
+            "code": "                    llm_grid_t, llm_grid_h, llm_grid_w = (\n                        t.item(),\n                        h.item() // spatial_merge_size,\n                        w.item() // spatial_merge_size,\n                    )\n                    text_len = ed - st\n\n"
+        },
+        {
+            "file": "src/qwen_vl/model/modeling_qwen2_5_vl.py",
+            "line": 1993,
+            "code": "                        # n_image = images_vggt[i].shape[0]\n                        n_image = 1\n                        height, width = images_vggt[i].shape[-2:]\n                        patch_size = self.config.vision_config.patch_size\n                        merge_size = self.config.vision_config.spatial_merge_size\n                        h_grid, w_grid = height // patch_size, width // patch_size\n                        h_grid_after_merge, w_grid_after_merge = h_grid // merge_size, w_grid // merge_size\n"
+        },
+        {
+            "file": "src/qwen_vl/model/modeling_qwen2_5_vl.py",
+            "line": 1994,
+            "code": "                        n_image = 1\n                        height, width = images_vggt[i].shape[-2:]\n                        patch_size = self.config.vision_config.patch_size\n                        merge_size = self.config.vision_config.spatial_merge_size\n                        h_grid, w_grid = height // patch_size, width // patch_size\n                        h_grid_after_merge, w_grid_after_merge = h_grid // merge_size, w_grid // merge_size\n                        new_height = h_grid_after_merge * (patch_size * merge_size)\n"
+        },
+        {
+            "file": "src/qwen_vl/model/modeling_qwen2_5_vl.py",
+            "line": 1995,
+            "code": "                        height, width = images_vggt[i].shape[-2:]\n                        patch_size = self.config.vision_config.patch_size\n                        merge_size = self.config.vision_config.spatial_merge_size\n                        h_grid, w_grid = height // patch_size, width // patch_size\n                        h_grid_after_merge, w_grid_after_merge = h_grid // merge_size, w_grid // merge_size\n                        new_height = h_grid_after_merge * (patch_size * merge_size)\n                        new_width = w_grid_after_merge * (patch_size * merge_size)\n"
+        },
+        {
+            "file": "src/qwen_vl/model/modeling_qwen2_5_vl.py",
+            "line": 1996,
+            "code": "                        patch_size = self.config.vision_config.patch_size\n                        merge_size = self.config.vision_config.spatial_merge_size\n                        h_grid, w_grid = height // patch_size, width // patch_size\n                        h_grid_after_merge, w_grid_after_merge = h_grid // merge_size, w_grid // merge_size\n                        new_height = h_grid_after_merge * (patch_size * merge_size)\n                        new_width = w_grid_after_merge * (patch_size * merge_size)\n\n"
+        },
+        {
+            "file": "src/qwen_vl/model/modeling_qwen2_5_vl.py",
+            "line": 1997,
+            "code": "                        merge_size = self.config.vision_config.spatial_merge_size\n                        h_grid, w_grid = height // patch_size, width // patch_size\n                        h_grid_after_merge, w_grid_after_merge = h_grid // merge_size, w_grid // merge_size\n                        new_height = h_grid_after_merge * (patch_size * merge_size)\n                        new_width = w_grid_after_merge * (patch_size * merge_size)\n\n                        dtype = torch.bfloat16 if torch.cuda.get_device_capability()[0] >= 8 else torch.float16\n"
+        },
+        {
+            "file": "src/qwen_vl/model/modeling_qwen2_5_vl.py",
+            "line": 1998,
+            "code": "                        h_grid, w_grid = height // patch_size, width // patch_size\n                        h_grid_after_merge, w_grid_after_merge = h_grid // merge_size, w_grid // merge_size\n                        new_height = h_grid_after_merge * (patch_size * merge_size)\n                        new_width = w_grid_after_merge * (patch_size * merge_size)\n\n                        dtype = torch.bfloat16 if torch.cuda.get_device_capability()[0] >= 8 else torch.float16\n                        with torch.no_grad():\n"
+        },
+        {
+            "file": "src/qwen_vl/model/modeling_qwen2_5_vl.py",
+            "line": 2037,
+            "code": "\n                        # using QwenPatchMerger\n                        features = features.view(n_image, h_grid, w_grid, -1)\n                        features = features[:, :h_grid_after_merge * merge_size, :w_grid_after_merge * merge_size, :].contiguous()\n                        features = features.view(n_image, h_grid_after_merge, merge_size, w_grid_after_merge, merge_size, -1)\n                        features = features.permute(0, 1, 3, 2, 4, 5).contiguous().to(self.visual.dtype)\n                        image_embeds_3d.append(self.merger(features))\n"
+        },
+        {
+            "file": "src/qwen_vl/model/modeling_qwen2_5_vl.py",
+            "line": 2038,
+            "code": "                        # using QwenPatchMerger\n                        features = features.view(n_image, h_grid, w_grid, -1)\n                        features = features[:, :h_grid_after_merge * merge_size, :w_grid_after_merge * merge_size, :].contiguous()\n                        features = features.view(n_image, h_grid_after_merge, merge_size, w_grid_after_merge, merge_size, -1)\n                        features = features.permute(0, 1, 3, 2, 4, 5).contiguous().to(self.visual.dtype)\n                        image_embeds_3d.append(self.merger(features))\n\n"
+        },
+        {
+            "file": "src/qwen_vl/model/configuration_qwen2_5_vl.py",
+            "line": 42,
+            "code": "        intermediate_size=3420,\n        num_heads=16,\n        in_channels=3,\n        patch_size=14,\n        spatial_merge_size=2,\n        temporal_patch_size=2,\n        tokens_per_second=4,\n"
+        },
+        {
+            "file": "src/qwen_vl/model/configuration_qwen2_5_vl.py",
+            "line": 43,
+            "code": "        num_heads=16,\n        in_channels=3,\n        patch_size=14,\n        spatial_merge_size=2,\n        temporal_patch_size=2,\n        tokens_per_second=4,\n        window_size=112,\n"
+        },
+        {
+            "file": "src/qwen_vl/model/configuration_qwen2_5_vl.py",
+            "line": 44,
+            "code": "        in_channels=3,\n        patch_size=14,\n        spatial_merge_size=2,\n        temporal_patch_size=2,\n        tokens_per_second=4,\n        window_size=112,\n        out_hidden_size=3584,\n"
+        },
+        {
+            "file": "src/qwen_vl/model/configuration_qwen2_5_vl.py",
+            "line": 59,
+            "code": "        self.intermediate_size = intermediate_size\n        self.num_heads = num_heads\n        self.in_channels = in_channels\n        self.patch_size = patch_size\n        self.spatial_merge_size = spatial_merge_size\n        self.temporal_patch_size = temporal_patch_size\n        self.tokens_per_second = tokens_per_second\n"
+        },
+        {
+            "file": "src/qwen_vl/model/configuration_qwen2_5_vl.py",
+            "line": 60,
+            "code": "        self.num_heads = num_heads\n        self.in_channels = in_channels\n        self.patch_size = patch_size\n        self.spatial_merge_size = spatial_merge_size\n        self.temporal_patch_size = temporal_patch_size\n        self.tokens_per_second = tokens_per_second\n        self.window_size = window_size\n"
+        },
+        {
+            "file": "src/qwen_vl/model/configuration_qwen2_5_vl.py",
+            "line": 61,
+            "code": "        self.in_channels = in_channels\n        self.patch_size = patch_size\n        self.spatial_merge_size = spatial_merge_size\n        self.temporal_patch_size = temporal_patch_size\n        self.tokens_per_second = tokens_per_second\n        self.window_size = window_size\n        self.fullatt_block_indexes = fullatt_block_indexes\n"
+        },
+        {
+            "file": "src/qwen_vl/model/vggt/models/vggt.py",
+            "line": 24,
+            "code": "    views: Optional[torch.Tensor] = None\n\nclass VGGT(nn.Module, PyTorchModelHubMixin):\n    def __init__(self, img_size=518, patch_size=14, embed_dim=1024):\n        super().__init__()\n\n        self.aggregator = Aggregator(img_size=img_size, patch_size=patch_size, embed_dim=embed_dim)\n"
+        },
+        {
+            "file": "src/qwen_vl/model/vggt/models/vggt.py",
+            "line": 27,
+            "code": "    def __init__(self, img_size=518, patch_size=14, embed_dim=1024):\n        super().__init__()\n\n        self.aggregator = Aggregator(img_size=img_size, patch_size=patch_size, embed_dim=embed_dim)\n        self.camera_head = CameraHead(dim_in=2 * embed_dim)\n        self.point_head = DPTHead(dim_in=2 * embed_dim, output_dim=4, activation=\"inv_log\", conf_activation=\"expp1\")\n        self.depth_head = DPTHead(dim_in=2 * embed_dim, output_dim=2, activation=\"exp\", conf_activation=\"expp1\")\n"
+        },
+        {
+            "file": "src/qwen_vl/model/vggt/models/vggt.py",
+            "line": 31,
+            "code": "        self.camera_head = CameraHead(dim_in=2 * embed_dim)\n        self.point_head = DPTHead(dim_in=2 * embed_dim, output_dim=4, activation=\"inv_log\", conf_activation=\"expp1\")\n        self.depth_head = DPTHead(dim_in=2 * embed_dim, output_dim=2, activation=\"exp\", conf_activation=\"expp1\")\n        self.track_head = TrackHead(dim_in=2 * embed_dim, patch_size=patch_size)\n    \n\n\n"
+        },
+        {
+            "file": "src/qwen_vl/model/vggt/models/aggregator.py",
+            "line": 36,
+            "code": "\n    Args:\n        img_size (int): Image size in pixels.\n        patch_size (int): Size of each patch for PatchEmbed.\n        embed_dim (int): Dimension of the token embeddings.\n        depth (int): Number of blocks.\n        num_heads (int): Number of attention heads.\n"
+        },
+        {
+            "file": "src/qwen_vl/model/vggt/models/aggregator.py",
+            "line": 57,
+            "code": "    def __init__(\n        self,\n        img_size=518,\n        patch_size=14,\n        embed_dim=1024,\n        depth=24,\n        num_heads=16,\n"
+        },
+        {
+            "file": "src/qwen_vl/model/vggt/models/aggregator.py",
+            "line": 76,
+            "code": "    ):\n        super().__init__()\n\n        self.__build_patch_embed__(patch_embed, img_size, patch_size, num_register_tokens, embed_dim=embed_dim)\n\n        # Initialize rotary position embedding if frequency > 0\n        self.rope = RotaryPositionEmbedding2D(frequency=rope_freq) if rope_freq > 0 else None\n"
+        },
+        {
+            "file": "src/qwen_vl/model/vggt/models/aggregator.py",
+            "line": 118,
+            "code": "\n        self.depth = depth\n        self.aa_order = aa_order\n        self.patch_size = patch_size\n        self.aa_block_size = aa_block_size\n\n        # Validate that depth is divisible by aa_block_size\n"
+        },
+        {
+            "file": "src/qwen_vl/model/vggt/models/aggregator.py",
+            "line": 155,
+            "code": "        self,\n        patch_embed,\n        img_size,\n        patch_size,\n        num_register_tokens,\n        interpolate_antialias=True,\n        interpolate_offset=0.0,\n"
+        },
+        {
+            "file": "src/qwen_vl/model/vggt/models/aggregator.py",
+            "line": 169,
+            "code": "        \"\"\"\n\n        if \"conv\" in patch_embed:\n            self.patch_embed = PatchEmbed(img_size=img_size, patch_size=patch_size, in_chans=3, embed_dim=embed_dim)\n        else:\n            vit_models = {\n                \"dinov2_vitl14_reg\": vit_large,\n"
+        },
+        {
+            "file": "src/qwen_vl/model/vggt/models/aggregator.py",
+            "line": 180,
+            "code": "\n            self.patch_embed = vit_models[patch_embed](\n                img_size=img_size,\n                patch_size=patch_size,\n                num_register_tokens=num_register_tokens,\n                interpolate_antialias=interpolate_antialias,\n                interpolate_offset=interpolate_offset,\n"
+        },
+        {
+            "file": "src/qwen_vl/model/vggt/models/aggregator.py",
+            "line": 249,
+            "code": "\n        pos = None\n        if self.rope is not None:\n            pos = self.position_getter(B * S, H // self.patch_size, W // self.patch_size, device=images.device)\n\n        if self.patch_start_idx > 0:\n            # do not use position embedding for special tokens (camera and register tokens)\n"
+        },
+        {
+            "file": "src/qwen_vl/model/vggt/heads/track_head.py",
+            "line": 15,
+            "code": "    def __init__(\n        self,\n        dim_in,\n        patch_size=14,\n        features=128,\n        iters=4,\n        predict_conf=True,\n"
+        },
+        {
+            "file": "src/qwen_vl/model/vggt/heads/track_head.py",
+            "line": 29,
+            "code": "\n        Args:\n            dim_in (int): Input dimension of tokens from the backbone.\n            patch_size (int): Size of image patches used in the vision transformer.\n            features (int): Number of feature channels in the feature extractor output.\n            iters (int): Number of refinement iterations for tracking predictions.\n            predict_conf (bool): Whether to predict confidence scores for tracked points.\n"
+        },
+        {
+            "file": "src/qwen_vl/model/vggt/heads/track_head.py",
+            "line": 40,
+            "code": "        \"\"\"\n        super().__init__()\n\n        self.patch_size = patch_size\n\n        # Feature extractor based on DPT architecture\n        # Processes tokens into feature maps for tracking\n"
+        },
+        {
+            "file": "src/qwen_vl/model/vggt/heads/track_head.py",
+            "line": 46,
+            "code": "        # Processes tokens into feature maps for tracking\n        self.feature_extractor = DPTHead(\n            dim_in=dim_in,\n            patch_size=patch_size,\n            features=features,\n            feature_only=True,  # Only output features, no activation\n            down_ratio=2,  # Reduces spatial dimensions by factor of 2\n"
+        },
+        {
+            "file": "src/qwen_vl/model/vggt/heads/dpt_head.py",
+            "line": 15,
+            "code": "    \"\"\"\n    Args:\n        dim_in (int): Input dimension (channels).\n        patch_size (int, optional): Patch size. Default is 14.\n        output_dim (int, optional): Number of output channels. Default is 4.\n        activation (str, optional): Activation type. Default is \"inv_log\".\n        conf_activation (str, optional): Confidence activation type. Default is \"expp1\".\n"
+        },
+        {
+            "file": "src/qwen_vl/model/vggt/heads/dpt_head.py",
+            "line": 30,
+            "code": "    def __init__(\n        self,\n        dim_in: int,\n        patch_size: int = 14,\n        output_dim: int = 4,\n        activation: str = \"inv_log\",\n        conf_activation: str = \"expp1\",\n"
+        },
+        {
+            "file": "src/qwen_vl/model/vggt/heads/dpt_head.py",
+            "line": 42,
+            "code": "        down_ratio: int = 1,\n    ) -> None:\n        super(DPTHead, self).__init__()\n        self.patch_size = patch_size\n        self.activation = activation\n        self.conf_activation = conf_activation\n        self.pos_embed = pos_embed\n"
+        },
+        {
+            "file": "src/qwen_vl/model/vggt/heads/dpt_head.py",
+            "line": 193,
+            "code": "\n        B, S, _, H, W = images.shape\n\n        patch_h, patch_w = H // self.patch_size, W // self.patch_size\n\n        out = []\n        dpt_idx = 0\n"
+        },
+        {
+            "file": "src/qwen_vl/model/vggt/heads/dpt_head.py",
+            "line": 224,
+            "code": "        # Interpolate fused output to match target image resolution.\n        out = custom_interpolate(\n            out,\n            (int(patch_h * self.patch_size / self.down_ratio), int(patch_w * self.patch_size / self.down_ratio)),\n            mode=\"bilinear\",\n            align_corners=True,\n        )\n"
+        },
+        {
+            "file": "src/qwen_vl/model/vggt/layers/patch_embed.py",
+            "line": 22,
+            "code": "\n    Args:\n        img_size: Image size.\n        patch_size: Patch token size.\n        in_chans: Number of input image channels.\n        embed_dim: Number of linear projection output channels.\n        norm_layer: Normalization layer.\n"
+        },
+        {
+            "file": "src/qwen_vl/model/vggt/layers/patch_embed.py",
+            "line": 31,
+            "code": "    def __init__(\n        self,\n        img_size: Union[int, Tuple[int, int]] = 224,\n        patch_size: Union[int, Tuple[int, int]] = 16,\n        in_chans: int = 3,\n        embed_dim: int = 768,\n        norm_layer: Optional[Callable] = None,\n"
+        },
+        {
+            "file": "src/qwen_vl/model/vggt/layers/patch_embed.py",
+            "line": 40,
+            "code": "        super().__init__()\n\n        image_HW = make_2tuple(img_size)\n        patch_HW = make_2tuple(patch_size)\n        patch_grid_size = (\n            image_HW[0] // patch_HW[0],\n            image_HW[1] // patch_HW[1],\n"
+        },
+        {
+            "file": "src/qwen_vl/model/vggt/layers/patch_embed.py",
+            "line": 47,
+            "code": "        )\n\n        self.img_size = image_HW\n        self.patch_size = patch_HW\n        self.patches_resolution = patch_grid_size\n        self.num_patches = patch_grid_size[0] * patch_grid_size[1]\n\n"
+        },
+        {
+            "file": "src/qwen_vl/model/vggt/layers/patch_embed.py",
+            "line": 61,
+            "code": "\n    def forward(self, x: Tensor) -> Tensor:\n        _, _, H, W = x.shape\n        patch_H, patch_W = self.patch_size\n\n        assert H % patch_H == 0, f\"Input image height {H} is not a multiple of patch height {patch_H}\"\n        assert W % patch_W == 0, f\"Input image width {W} is not a multiple of patch width: {patch_W}\"\n"
+        },
+        {
+            "file": "src/qwen_vl/model/vggt/layers/patch_embed.py",
+            "line": 76,
+            "code": "\n    def flops(self) -> float:\n        Ho, Wo = self.patches_resolution\n        flops = Ho * Wo * self.embed_dim * self.in_chans * (self.patch_size[0] * self.patch_size[1])\n        if self.norm is not None:\n            flops += Ho * Wo * self.embed_dim\n        return flops\n"
+        },
+        {
+            "file": "src/qwen_vl/model/vggt/layers/vision_transformer.py",
+            "line": 37,
+            "code": "    def __init__(\n        self,\n        img_size=224,\n        patch_size=16,\n        in_chans=3,\n        embed_dim=768,\n        depth=12,\n"
+        },
+        {
+            "file": "src/qwen_vl/model/vggt/layers/vision_transformer.py",
+            "line": 62,
+            "code": "        \"\"\"\n        Args:\n            img_size (int, tuple): input image size\n            patch_size (int, tuple): patch size\n            in_chans (int): number of input channels\n            embed_dim (int): embedding dimension\n            depth (int): depth of transformer\n"
+        },
+        {
+            "file": "src/qwen_vl/model/vggt/layers/vision_transformer.py",
+            "line": 95,
+            "code": "        self.num_tokens = 1\n        self.n_blocks = depth\n        self.num_heads = num_heads\n        self.patch_size = patch_size\n        self.num_register_tokens = num_register_tokens\n        self.interpolate_antialias = interpolate_antialias\n        self.interpolate_offset = interpolate_offset\n"
+        },
+        {
+            "file": "src/qwen_vl/model/vggt/layers/vision_transformer.py",
+            "line": 100,
+            "code": "        self.interpolate_antialias = interpolate_antialias\n        self.interpolate_offset = interpolate_offset\n\n        self.patch_embed = embed_layer(img_size=img_size, patch_size=patch_size, in_chans=in_chans, embed_dim=embed_dim)\n        num_patches = self.patch_embed.num_patches\n\n        self.cls_token = nn.Parameter(torch.zeros(1, 1, embed_dim))\n"
+        },
+        {
+            "file": "src/qwen_vl/model/vggt/layers/vision_transformer.py",
+            "line": 184,
+            "code": "        class_pos_embed = pos_embed[:, 0]\n        patch_pos_embed = pos_embed[:, 1:]\n        dim = x.shape[-1]\n        w0 = w // self.patch_size\n        h0 = h // self.patch_size\n        M = int(math.sqrt(N))  # Recover the number of patches in each dimension\n        assert N == M * M\n"
+        },
+        {
+            "file": "src/qwen_vl/model/vggt/layers/vision_transformer.py",
+            "line": 185,
+            "code": "        patch_pos_embed = pos_embed[:, 1:]\n        dim = x.shape[-1]\n        w0 = w // self.patch_size\n        h0 = h // self.patch_size\n        M = int(math.sqrt(N))  # Recover the number of patches in each dimension\n        assert N == M * M\n        kwargs = {}\n"
+        },
+        {
+            "file": "src/qwen_vl/model/vggt/layers/vision_transformer.py",
+            "line": 319,
+            "code": "        if reshape:\n            B, _, w, h = x.shape\n            outputs = [\n                out.reshape(B, w // self.patch_size, h // self.patch_size, -1).permute(0, 3, 1, 2).contiguous()\n                for out in outputs\n            ]\n        if return_class_token:\n"
+        },
+        {
+            "file": "src/qwen_vl/model/vggt/layers/vision_transformer.py",
+            "line": 342,
+            "code": "            nn.init.zeros_(module.bias)\n\n\ndef vit_small(patch_size=16, num_register_tokens=0, **kwargs):\n    model = DinoVisionTransformer(\n        patch_size=patch_size,\n        embed_dim=384,\n"
+        },
+        {
+            "file": "src/qwen_vl/model/vggt/layers/vision_transformer.py",
+            "line": 344,
+            "code": "\ndef vit_small(patch_size=16, num_register_tokens=0, **kwargs):\n    model = DinoVisionTransformer(\n        patch_size=patch_size,\n        embed_dim=384,\n        depth=12,\n        num_heads=6,\n"
+        },
+        {
+            "file": "src/qwen_vl/model/vggt/layers/vision_transformer.py",
+            "line": 356,
+            "code": "    return model\n\n\ndef vit_base(patch_size=16, num_register_tokens=0, **kwargs):\n    model = DinoVisionTransformer(\n        patch_size=patch_size,\n        embed_dim=768,\n"
+        },
+        {
+            "file": "src/qwen_vl/model/vggt/layers/vision_transformer.py",
+            "line": 358,
+            "code": "\ndef vit_base(patch_size=16, num_register_tokens=0, **kwargs):\n    model = DinoVisionTransformer(\n        patch_size=patch_size,\n        embed_dim=768,\n        depth=12,\n        num_heads=12,\n"
+        },
+        {
+            "file": "src/qwen_vl/model/vggt/layers/vision_transformer.py",
+            "line": 370,
+            "code": "    return model\n\n\ndef vit_large(patch_size=16, num_register_tokens=0, **kwargs):\n    model = DinoVisionTransformer(\n        patch_size=patch_size,\n        embed_dim=1024,\n"
+        },
+        {
+            "file": "src/qwen_vl/model/vggt/layers/vision_transformer.py",
+            "line": 372,
+            "code": "\ndef vit_large(patch_size=16, num_register_tokens=0, **kwargs):\n    model = DinoVisionTransformer(\n        patch_size=patch_size,\n        embed_dim=1024,\n        depth=24,\n        num_heads=16,\n"
+        },
+        {
+            "file": "src/qwen_vl/model/vggt/layers/vision_transformer.py",
+            "line": 384,
+            "code": "    return model\n\n\ndef vit_giant2(patch_size=16, num_register_tokens=0, **kwargs):\n    \"\"\"\n    Close to ViT-giant, with embed-dim 1536 and 24 heads => embed-dim per head 64\n    \"\"\"\n"
+        },
+        {
+            "file": "src/qwen_vl/model/vggt/layers/vision_transformer.py",
+            "line": 389,
+            "code": "    Close to ViT-giant, with embed-dim 1536 and 24 heads => embed-dim per head 64\n    \"\"\"\n    model = DinoVisionTransformer(\n        patch_size=patch_size,\n        embed_dim=1536,\n        depth=40,\n        num_heads=24,\n"
+        },
+        {
+            "file": "src/qwen_vl/data/data_qwen.py",
+            "line": 183,
+            "code": "        self.tokenizer = tokenizer\n        self.list_data_dict = list_data_dict\n        self.data_args = data_args\n        self.data_args.image_processor.max_pixels = data_args.max_pixels\n        self.data_args.image_processor.min_pixels = data_args.min_pixels\n        self.data_args.image_processor.size[\"longest_edge\"] = data_args.max_pixels\n        self.data_args.image_processor.size[\"shortest_edge\"] = data_args.min_pixels\n"
+        },
+        {
+            "file": "src/qwen_vl/data/data_qwen.py",
+            "line": 184,
+            "code": "        self.list_data_dict = list_data_dict\n        self.data_args = data_args\n        self.data_args.image_processor.max_pixels = data_args.max_pixels\n        self.data_args.image_processor.min_pixels = data_args.min_pixels\n        self.data_args.image_processor.size[\"longest_edge\"] = data_args.max_pixels\n        self.data_args.image_processor.size[\"shortest_edge\"] = data_args.min_pixels\n\n"
+        },
+        {
+            "file": "src/qwen_vl/data/data_qwen.py",
+            "line": 185,
+            "code": "        self.data_args = data_args\n        self.data_args.image_processor.max_pixels = data_args.max_pixels\n        self.data_args.image_processor.min_pixels = data_args.min_pixels\n        self.data_args.image_processor.size[\"longest_edge\"] = data_args.max_pixels\n        self.data_args.image_processor.size[\"shortest_edge\"] = data_args.min_pixels\n\n    def __len__(self):\n"
+        },
+        {
+            "file": "src/qwen_vl/data/data_qwen.py",
+            "line": 186,
+            "code": "        self.data_args.image_processor.max_pixels = data_args.max_pixels\n        self.data_args.image_processor.min_pixels = data_args.min_pixels\n        self.data_args.image_processor.size[\"longest_edge\"] = data_args.max_pixels\n        self.data_args.image_processor.size[\"shortest_edge\"] = data_args.min_pixels\n\n    def __len__(self):\n        return len(self.list_data_dict)\n"
+        },
+        {
+            "file": "src/qwen_vl/data/data_qwen.py",
+            "line": 270,
+            "code": "        from qwen_vl.model.vggt.utils.load_fn import load_and_preprocess_images\n        images = load_and_preprocess_images([image_file])\n        images_vggt = copy.deepcopy(images[0])\n        merge_size: int = getattr(image_processor, \"merge_size\")\n        patch_size: int = getattr(image_processor, \"patch_size\")\n        _, height, width = images[0].shape\n        # merge_size = 2\n"
+        },
+        {
+            "file": "src/qwen_vl/data/data_qwen.py",
+            "line": 271,
+            "code": "        images = load_and_preprocess_images([image_file])\n        images_vggt = copy.deepcopy(images[0])\n        merge_size: int = getattr(image_processor, \"merge_size\")\n        patch_size: int = getattr(image_processor, \"patch_size\")\n        _, height, width = images[0].shape\n        # merge_size = 2\n        if (width // patch_size) % merge_size > 0:\n"
+        },
+        {
+            "file": "src/qwen_vl/data/data_qwen.py",
+            "line": 273,
+            "code": "        merge_size: int = getattr(image_processor, \"merge_size\")\n        patch_size: int = getattr(image_processor, \"patch_size\")\n        _, height, width = images[0].shape\n        # merge_size = 2\n        if (width // patch_size) % merge_size > 0:\n            width = width - (width // patch_size) % merge_size * patch_size\n        if (height // patch_size) % merge_size > 0:\n"
+        },
+        {
+            "file": "src/qwen_vl/data/data_qwen.py",
+            "line": 274,
+            "code": "        patch_size: int = getattr(image_processor, \"patch_size\")\n        _, height, width = images[0].shape\n        # merge_size = 2\n        if (width // patch_size) % merge_size > 0:\n            width = width - (width // patch_size) % merge_size * patch_size\n        if (height // patch_size) % merge_size > 0:\n            height = height - (height // patch_size) % merge_size * patch_size\n"
+        },
+        {
+            "file": "src/qwen_vl/data/data_qwen.py",
+            "line": 275,
+            "code": "        _, height, width = images[0].shape\n        # merge_size = 2\n        if (width // patch_size) % merge_size > 0:\n            width = width - (width // patch_size) % merge_size * patch_size\n        if (height // patch_size) % merge_size > 0:\n            height = height - (height // patch_size) % merge_size * patch_size\n        images = images[:,:, :height, :width]\n"
+        },
+        {
+            "file": "src/qwen_vl/data/data_qwen.py",
+            "line": 276,
+            "code": "        # merge_size = 2\n        if (width // patch_size) % merge_size > 0:\n            width = width - (width // patch_size) % merge_size * patch_size\n        if (height // patch_size) % merge_size > 0:\n            height = height - (height // patch_size) % merge_size * patch_size\n        images = images[:,:, :height, :width]\n        visual_processed = image_processor(images, return_tensors=\"pt\", do_rescale=False)\n"
+        },
+        {
+            "file": "src/qwen_vl/data/data_qwen.py",
+            "line": 277,
+            "code": "        if (width // patch_size) % merge_size > 0:\n            width = width - (width // patch_size) % merge_size * patch_size\n        if (height // patch_size) % merge_size > 0:\n            height = height - (height // patch_size) % merge_size * patch_size\n        images = images[:,:, :height, :width]\n        visual_processed = image_processor(images, return_tensors=\"pt\", do_rescale=False)\n        image_tensor = visual_processed[\"pixel_values\"]\n"
+        },
+        {
+            "file": "src/qwen_vl/data/data_qwen.py",
+            "line": 312,
+            "code": "        video = vr.get_batch(frame_idx).asnumpy()\n        fps = len(frame_idx) / video_length\n        processor = copy.deepcopy(self.data_args.image_processor)\n        processor.max_pixels = self.data_args.video_max_frame_pixels\n        processor.min_pixels = self.data_args.video_min_frame_pixels\n        processor.size[\"longest_edge\"] = processor.max_pixels\n        processor.size[\"shortest_edge\"] = processor.min_pixels\n"
+        },
+        {
+            "file": "src/qwen_vl/data/data_qwen.py",
+            "line": 313,
+            "code": "        fps = len(frame_idx) / video_length\n        processor = copy.deepcopy(self.data_args.image_processor)\n        processor.max_pixels = self.data_args.video_max_frame_pixels\n        processor.min_pixels = self.data_args.video_min_frame_pixels\n        processor.size[\"longest_edge\"] = processor.max_pixels\n        processor.size[\"shortest_edge\"] = processor.min_pixels\n        video_processed = processor.preprocess(\n"
+        },
+        {
+            "file": "src/qwen_vl/data/data_qwen.py",
+            "line": 314,
+            "code": "        processor = copy.deepcopy(self.data_args.image_processor)\n        processor.max_pixels = self.data_args.video_max_frame_pixels\n        processor.min_pixels = self.data_args.video_min_frame_pixels\n        processor.size[\"longest_edge\"] = processor.max_pixels\n        processor.size[\"shortest_edge\"] = processor.min_pixels\n        video_processed = processor.preprocess(\n            images=None, videos=video, return_tensors=\"pt\"\n"
+        },
+        {
+            "file": "src/qwen_vl/data/data_qwen.py",
+            "line": 315,
+            "code": "        processor.max_pixels = self.data_args.video_max_frame_pixels\n        processor.min_pixels = self.data_args.video_min_frame_pixels\n        processor.size[\"longest_edge\"] = processor.max_pixels\n        processor.size[\"shortest_edge\"] = processor.min_pixels\n        video_processed = processor.preprocess(\n            images=None, videos=video, return_tensors=\"pt\"\n        )\n"
+        },
+        {
+            "file": "src/qwen_vl/data/data_qwen.py",
+            "line": 322,
+            "code": "        video_tensor = video_processed[\"pixel_values_videos\"]\n        grid_thw = video_processed[\"video_grid_thw\"][0]\n        second_per_grid_ts = [\n            self.data_args.image_processor.temporal_patch_size / fps\n        ] * len(grid_thw)\n        return video_tensor, grid_thw, second_per_grid_ts\n    \n"
+        },
+        {
+            "file": "src/qwen_vl/data/data_qwen.py",
+            "line": 488,
+            "code": "                grid_thw_merged = [grid_thw_merged]\n                grid_thw = [grid_thw]\n            grid_thw_merged = [\n                merged_thw.prod() // self.data_args.image_processor.merge_size**2\n                for merged_thw in grid_thw_merged\n            ]\n            sources = copy.deepcopy([e[\"conversations\"] for e in sources])\n"
+        },
+        {
+            "file": "src/qwen_vl/data/data_qwen.py",
+            "line": 496,
+            "code": "                sources, self.tokenizer, grid_thw=grid_thw_merged, visual_type=\"image\"\n            )\n            position_ids, _ = self.get_rope_index(\n                self.data_args.image_processor.merge_size,\n                data_dict[\"input_ids\"],\n                torch.stack(grid_thw, dim=0),\n            )\n"
+        },
+        {
+            "file": "src/qwen_vl/data/data_qwen.py",
+            "line": 524,
+            "code": "                grid_thw_merged = [grid_thw_merged]\n                grid_thw = [grid_thw]\n            grid_thw_merged = [\n                merged_thw.prod() // self.data_args.image_processor.merge_size**2\n                for merged_thw in grid_thw_merged\n            ]\n            sources = copy.deepcopy([e[\"conversations\"] for e in sources])\n"
+        },
+        {
+            "file": "src/qwen_vl/data/data_qwen.py",
+            "line": 532,
+            "code": "                sources, self.tokenizer, grid_thw=grid_thw_merged, visual_type=\"video\"\n            )\n            position_ids, _ = self.get_rope_index(\n                self.data_args.image_processor.merge_size,\n                data_dict[\"input_ids\"],\n                video_grid_thw=torch.stack(grid_thw, dim=0),\n                second_per_grid_ts=second_per_grid_ts,\n"
+        },
+        {
+            "file": "src/qwen_vl/data/rope2d.py",
+            "line": 24,
+            "code": "\n\ndef get_rope_index_25(\n    spatial_merge_size: Optional[int] = 2,\n    input_ids: Optional[torch.LongTensor] = None,\n    image_grid_thw: Optional[torch.LongTensor] = None,\n    video_grid_thw: Optional[torch.LongTensor] = None,\n"
+        },
+        {
+            "file": "src/qwen_vl/data/rope2d.py",
+            "line": 53,
+            "code": "            We also have some important parameters:\n            fps (Frames Per Second): The video's frame rate, set to 1. This means one frame is processed each second.\n            tokens_per_second: This is a crucial parameter. It dictates how many \"time-steps\" or \"temporal tokens\" are conceptually packed into a one-second interval of the video. In this case, we have 25 tokens per second. So each second of the video will be represented with 25 separate time points. It essentially defines the temporal granularity.\n            temporal_patch_size: The number of frames that compose one temporal patch. Here, it's 2 frames.\n            interval: The step size for the temporal position IDs, calculated as tokens_per_second * temporal_patch_size / fps. In this case, 25 * 2 / 1 = 50. This means that each temporal patch will be have a difference of 50 in the temporal position IDs.\n            input_ids: [V V V V V V V V V V V V T T T T T], here V is for vision.\n            vision temporal position_ids: [0, 0, 0, 0, 50, 50, 50, 50, 100, 100, 100, 100]\n"
+        },
+        {
+            "file": "src/qwen_vl/data/rope2d.py",
+            "line": 54,
+            "code": "            fps (Frames Per Second): The video's frame rate, set to 1. This means one frame is processed each second.\n            tokens_per_second: This is a crucial parameter. It dictates how many \"time-steps\" or \"temporal tokens\" are conceptually packed into a one-second interval of the video. In this case, we have 25 tokens per second. So each second of the video will be represented with 25 separate time points. It essentially defines the temporal granularity.\n            temporal_patch_size: The number of frames that compose one temporal patch. Here, it's 2 frames.\n            interval: The step size for the temporal position IDs, calculated as tokens_per_second * temporal_patch_size / fps. In this case, 25 * 2 / 1 = 50. This means that each temporal patch will be have a difference of 50 in the temporal position IDs.\n            input_ids: [V V V V V V V V V V V V T T T T T], here V is for vision.\n            vision temporal position_ids: [0, 0, 0, 0, 50, 50, 50, 50, 100, 100, 100, 100]\n            vision height position_ids: [0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 1, 1]\n"
+        },
+        {
+            "file": "src/qwen_vl/data/rope2d.py",
+            "line": 151,
+            "code": "                    ed = ed_video\n                llm_grid_t, llm_grid_h, llm_grid_w = (\n                    t.item(),\n                    h.item() // spatial_merge_size,\n                    w.item() // spatial_merge_size,\n                )\n                text_len = ed - st\n"
+        },
+        {
+            "file": "src/qwen_vl/data/rope2d.py",
+            "line": 152,
+            "code": "                llm_grid_t, llm_grid_h, llm_grid_w = (\n                    t.item(),\n                    h.item() // spatial_merge_size,\n                    w.item() // spatial_merge_size,\n                )\n                text_len = ed - st\n\n"
+        },
+        {
+            "file": "src/qwen_vl/data/rope2d.py",
+            "line": 235,
+            "code": "\n\ndef get_rope_index_2(\n    spatial_merge_size: Optional[int] = 2,\n    input_ids: Optional[torch.LongTensor] = None,\n    image_grid_thw: Optional[torch.LongTensor] = None,\n    video_grid_thw: Optional[torch.LongTensor] = None,\n"
+        },
+        {
+            "file": "src/qwen_vl/data/rope2d.py",
+            "line": 346,
+            "code": "                    ed = ed_video\n                llm_grid_t, llm_grid_h, llm_grid_w = (\n                    t.item(),\n                    h.item() // spatial_merge_size,\n                    w.item() // spatial_merge_size,\n                )\n                text_len = ed - st\n"
+        },
+        {
+            "file": "src/qwen_vl/data/rope2d.py",
+            "line": 347,
+            "code": "                llm_grid_t, llm_grid_h, llm_grid_w = (\n                    t.item(),\n                    h.item() // spatial_merge_size,\n                    w.item() // spatial_merge_size,\n                )\n                text_len = ed - st\n\n"
+        },
+        {
+            "file": "scripts/train_extra.sh",
+            "line": 39,
+            "code": "            --optim adamw_torch \\\n            --model_max_length 163840 \\\n            --data_flatten False \\\n            --max_pixels $((576*28*28)) \\\n            --min_pixels $((16*28*28)) \\\n            --base_interval 2 \\\n            --video_max_frames 8 \\\n"
+        },
+        {
+            "file": "scripts/train_extra.sh",
+            "line": 40,
+            "code": "            --model_max_length 163840 \\\n            --data_flatten False \\\n            --max_pixels $((576*28*28)) \\\n            --min_pixels $((16*28*28)) \\\n            --base_interval 2 \\\n            --video_max_frames 8 \\\n            --video_min_frames 4 \\\n"
+        },
+        {
+            "file": "scripts/train_extra.sh",
+            "line": 44,
+            "code": "            --base_interval 2 \\\n            --video_max_frames 8 \\\n            --video_min_frames 4 \\\n            --video_max_frame_pixels $((1664*28*28)) \\\n            --video_min_frame_pixels $((256*28*28)) \\\n            --num_train_epochs 1 \\\n            --warmup_ratio 0.03 \\\n"
+        },
+        {
+            "file": "scripts/train.sh",
+            "line": 39,
+            "code": "            --optim adamw_torch \\\n            --model_max_length 163840 \\\n            --data_flatten False \\\n            --max_pixels $((576*28*28)) \\\n            --min_pixels $((16*28*28)) \\\n            --base_interval 2 \\\n            --video_max_frames 8 \\\n"
+        },
+        {
+            "file": "scripts/train.sh",
+            "line": 40,
+            "code": "            --model_max_length 163840 \\\n            --data_flatten False \\\n            --max_pixels $((576*28*28)) \\\n            --min_pixels $((16*28*28)) \\\n            --base_interval 2 \\\n            --video_max_frames 8 \\\n            --video_min_frames 4 \\\n"
+        },
+        {
+            "file": "scripts/train.sh",
+            "line": 44,
+            "code": "            --base_interval 2 \\\n            --video_max_frames 8 \\\n            --video_min_frames 4 \\\n            --video_max_frame_pixels $((1664*28*28)) \\\n            --video_min_frame_pixels $((256*28*28)) \\\n            --num_train_epochs 1 \\\n            --warmup_ratio 0.03 \\\n"
+        }
+    ],
+    "tokenizer_info": [],
+    "action_space": [
+        {
+            "file": "src/dagger.py",
+            "line": 549,
+            "code": "context = f\"These images are your historical observations and your current observation.\\n Your task is to {task} \\n You should take one of the following actions:\\n MOVE_FORWARD\\n TURN_LEFT\\n TURN_RIGHT\\n STOP.\""
+        },
+        {
+            "file": "src/evaluation.py",
+            "line": 284,
+            "code": "context = f\"These images are your historical observations and your current observation.\\n Your task is to {task} \\n You should take one of the following actions:\\n MOVE_FORWARD\\n TURN_LEFT\\n TURN_RIGHT\\n STOP.\""
+        }
+    ],
+    "model_loading": [
+        {
+            "file": "src/dagger.py",
+            "line": 492,
+            "code": "    def __init__(self, pretrained, device=\"cuda\"):\n        # 禁用FlashAttention，改用eager\n        config = AutoConfig.from_pretrained(pretrained)\n        config.attn_implementation = \"eager\"\n        \n        # 显存优化：bfloat16→float16\n        self.model = Qwen2_5_VLForConditionalGenerationForJanusVLN.from_pretrained(\n"
+        },
+        {
+            "file": "src/dagger.py",
+            "line": 496,
+            "code": "        \n        # 显存优化：bfloat16→float16\n        self.model = Qwen2_5_VLForConditionalGenerationForJanusVLN.from_pretrained(\n            pretrained,\n            config=config,\n            torch_dtype=torch.float16,\n            device_map={\"\": device},\n"
+        },
+        {
+            "file": "src/dagger.py",
+            "line": 505,
+            "code": "        ).eval()\n        \n        self.tokenizer = AutoTokenizer.from_pretrained(pretrained, padding_side=\"left\")\n        # 强制传入整数参数\n        self.processor = AutoProcessor.from_pretrained(\n            pretrained, \n            max_pixels=int(max_pixels),\n"
+        },
+        {
+            "file": "src/dagger.py",
+            "line": 507,
+            "code": "        self.tokenizer = AutoTokenizer.from_pretrained(pretrained, padding_side=\"left\")\n        # 强制传入整数参数\n        self.processor = AutoProcessor.from_pretrained(\n            pretrained, \n            max_pixels=int(max_pixels),\n            min_pixels=int(min_pixels),\n            padding_side=\"left\"\n"
+        },
+        {
+            "file": "src/evaluation.py",
+            "line": 253,
+            "code": "class JanusVLN_Inference:\n    def __init__(self, pretrained, device=\"cuda\"):\n        config = AutoConfig.from_pretrained(pretrained)\n        self.model = Qwen2_5_VLForConditionalGenerationForJanusVLN.from_pretrained(\n            pretrained,\n            config=config,\n            torch_dtype=torch.bfloat16,\n"
+        },
+        {
+            "file": "src/evaluation.py",
+            "line": 254,
+            "code": "    def __init__(self, pretrained, device=\"cuda\"):\n        config = AutoConfig.from_pretrained(pretrained)\n        self.model = Qwen2_5_VLForConditionalGenerationForJanusVLN.from_pretrained(\n            pretrained,\n            config=config,\n            torch_dtype=torch.bfloat16,\n            device_map={\"\": device},\n"
+        },
+        {
+            "file": "src/evaluation.py",
+            "line": 263,
+            "code": "        ).eval()\n        \n        self.tokenizer = AutoTokenizer.from_pretrained(pretrained, padding_side=\"left\")\n        self.processor = AutoProcessor.from_pretrained(pretrained, max_pixels=max_pixels, min_pixels=min_pixels, padding_side=\"left\")\n        \n        self.device = device\n\n"
+        },
+        {
+            "file": "src/evaluation.py",
+            "line": 264,
+            "code": "        \n        self.tokenizer = AutoTokenizer.from_pretrained(pretrained, padding_side=\"left\")\n        self.processor = AutoProcessor.from_pretrained(pretrained, max_pixels=max_pixels, min_pixels=min_pixels, padding_side=\"left\")\n        \n        self.device = device\n\n\n"
+        },
+        {
+            "file": "src/qwen_vl/train/train_qwen.py",
+            "line": 115,
+            "code": "    if \"qwen2.5\" in model_args.model_name_or_path.lower():\n        from qwen_vl.model.modeling_qwen2_5_vl import Qwen2_5_VLForConditionalGenerationForJanusVLN\n        config = AutoConfig.from_pretrained(model_args.model_name_or_path)\n        setattr(config, \"lam\", model_args.lam)\n        model = Qwen2_5_VLForConditionalGenerationForJanusVLN.from_pretrained(\n            pretrained_model_name_or_path=model_args.model_name_or_path,\n            config=config,\n"
+        },
+        {
+            "file": "src/qwen_vl/train/train_qwen.py",
+            "line": 117,
+            "code": "        config = AutoConfig.from_pretrained(model_args.model_name_or_path)\n        setattr(config, \"lam\", model_args.lam)\n        model = Qwen2_5_VLForConditionalGenerationForJanusVLN.from_pretrained(\n            pretrained_model_name_or_path=model_args.model_name_or_path,\n            config=config,\n            cache_dir=training_args.cache_dir,\n            attn_implementation=attn_implementation,\n"
+        },
+        {
+            "file": "src/qwen_vl/train/train_qwen.py",
+            "line": 126,
+            "code": "        )\n\n        data_args.image_processor = AutoProcessor.from_pretrained(\n            model_args.model_name_or_path,\n        ).image_processor\n        data_args.model_type = \"qwen2.5vl\"\n    else:\n"
+        },
+        {
+            "file": "src/qwen_vl/train/train_qwen.py",
+            "line": 131,
+            "code": "        data_args.model_type = \"qwen2.5vl\"\n    else:\n        model = Qwen2VLForConditionalGeneration.from_pretrained(\n            model_args.model_name_or_path,\n            cache_dir=training_args.cache_dir,\n            attn_implementation=attn_implementation,\n            torch_dtype=(torch.bfloat16 if training_args.bf16 else None),\n"
+        },
+        {
+            "file": "src/qwen_vl/train/train_qwen.py",
+            "line": 137,
+            "code": "            torch_dtype=(torch.bfloat16 if training_args.bf16 else None),\n        )\n        data_args.image_processor = Qwen2VLImageProcessor.from_pretrained(\n            model_args.model_name_or_path,\n        )\n        data_args.model_type = \"qwen2vl\"\n\n"
+        },
+        {
+            "file": "src/qwen_vl/train/train_qwen.py",
+            "line": 155,
+            "code": "            model.get_input_embeddings().register_forward_hook(make_inputs_require_grad)\n\n    tokenizer = transformers.AutoTokenizer.from_pretrained(\n        model_args.model_name_or_path,\n        cache_dir=training_args.cache_dir,\n        model_max_length=training_args.model_max_length,\n        padding_side=\"right\",\n"
+        },
+        {
+            "file": "src/qwen_vl/model/modeling_qwen2_5_vl.py",
+            "line": 394,
+            "code": "            Model configuration class with all the parameters of the model. Initializing with a config file does not\n            load the weights associated with the model, only the configuration. Check out the\n            [`~PreTrainedModel.from_pretrained`] method to load the model weights.\n\"\"\"\n\n\n@add_start_docstrings(\n"
+        },
+        {
+            "file": "src/qwen_vl/model/modeling_qwen2_5_vl.py",
+            "line": 1700,
+            "code": "\n    @classmethod\n    def from_pretrained(cls, pretrained_model_name_or_path, *model_args, mode=None, **kwargs):\n        vggt_model_path = kwargs.pop(\"vggt_model_path\", None)\n        model = super().from_pretrained(pretrained_model_name_or_path, *model_args, **kwargs)\n        model.mode = mode\n        if vggt_model_path:\n"
+        },
+        {
+            "file": "src/qwen_vl/model/modeling_qwen2_5_vl.py",
+            "line": 1702,
+            "code": "    def from_pretrained(cls, pretrained_model_name_or_path, *model_args, mode=None, **kwargs):\n        vggt_model_path = kwargs.pop(\"vggt_model_path\", None)\n        model = super().from_pretrained(pretrained_model_name_or_path, *model_args, **kwargs)\n        model.mode = mode\n        if vggt_model_path:\n            print(f\"Loading VGGT from {vggt_model_path}\")\n            vggt = VGGT.from_pretrained(vggt_model_path)\n"
+        },
+        {
+            "file": "src/qwen_vl/model/modeling_qwen2_5_vl.py",
+            "line": 1706,
+            "code": "        if vggt_model_path:\n            print(f\"Loading VGGT from {vggt_model_path}\")\n            vggt = VGGT.from_pretrained(vggt_model_path)\n            vggt.camera_head = None\n            vggt.track_head = None\n            model.vggt = vggt\n            for param in model.vggt.parameters():\n"
+        },
+        {
+            "file": "src/qwen_vl/model/modeling_qwen2_5_vl.py",
+            "line": 1951,
+            "code": "        >>> from transformers import AutoProcessor, Qwen2_5_VLForConditionalGeneration\n\n        >>> model = Qwen2_5_VLForConditionalGeneration.from_pretrained(\"Qwen/Qwen2.5-VL-7B-Instruct\")\n        >>> processor = AutoProcessor.from_pretrained(\"Qwen/Qwen2.5-VL-7B-Instruct\")\n\n        >>> messages = [\n            {\n"
+        },
+        {
+            "file": "src/qwen_vl/model/modeling_qwen2_5_vl.py",
+            "line": 1952,
+            "code": "\n        >>> model = Qwen2_5_VLForConditionalGeneration.from_pretrained(\"Qwen/Qwen2.5-VL-7B-Instruct\")\n        >>> processor = AutoProcessor.from_pretrained(\"Qwen/Qwen2.5-VL-7B-Instruct\")\n\n        >>> messages = [\n            {\n                \"role\": \"user\",\n"
+        }
+    ],
+    "model_definition": [
+        {
+            "file": "src/dagger.py",
+            "line": 489,
+            "code": "class JanusVLN_Inference:"
+        },
+        {
+            "file": "src/evaluation.py",
+            "line": 251,
+            "code": "class JanusVLN_Inference:"
+        },
+        {
+            "file": "src/qwen_vl/train/argument.py",
+            "line": 7,
+            "code": "class ModelArguments:"
+        },
+        {
+            "file": "src/qwen_vl/model/modeling_qwen2_5_vl.py",
+            "line": 382,
+            "code": "This model inherits from [`PreTrainedModel`]. Check the superclass documentation for the generic methods the"
+        },
+        {
+            "file": "src/qwen_vl/model/modeling_qwen2_5_vl.py",
+            "line": 392,
+            "code": "Model configuration class with all the parameters of the model. Initializing with a config file does not"
+        },
+        {
+            "file": "src/qwen_vl/model/modeling_qwen2_5_vl.py",
+            "line": 402,
+            "code": "class Qwen2_5_VLPreTrainedModel(PreTrainedModel):"
+        },
+        {
+            "file": "src/qwen_vl/model/modeling_qwen2_5_vl.py",
+            "line": 425,
+            "code": "class Qwen2_5_VisionTransformerPretrainedModel(Qwen2_5_VLPreTrainedModel):"
+        },
+        {
+            "file": "src/qwen_vl/model/modeling_qwen2_5_vl.py",
+            "line": 1152,
+            "code": "class Qwen2_5_VLModel(Qwen2_5_VLPreTrainedModel):"
+        },
+        {
+            "file": "src/qwen_vl/model/modeling_qwen2_5_vl.py",
+            "line": 1477,
+            "code": "class Qwen2_5_VLCausalLMOutputWithPast(ModelOutput):"
+        },
+        {
+            "file": "src/qwen_vl/model/modeling_qwen2_5_vl.py",
+            "line": 1651,
+            "code": "class Qwen2_5_VLForConditionalGenerationForJanusVLN(Qwen2_5_VLPreTrainedModel, GenerationMixin):"
+        },
+        {
+            "file": "src/qwen_vl/model/configuration_qwen2_5_vl.py",
+            "line": 70,
+            "code": "This is the configuration class to store the configuration of a [`Qwen2_5_VLModel`]. It is used to instantiate a"
+        },
+        {
+            "file": "src/qwen_vl/model/vggt/models/vggt.py",
+            "line": 19,
+            "code": "class VGGTOutput(ModelOutput):"
+        },
+        {
+            "file": "src/qwen_vl/model/vggt/models/vggt.py",
+            "line": 23,
+            "code": "class VGGT(nn.Module, PyTorchModelHubMixin):"
+        }
+    ]
+}
