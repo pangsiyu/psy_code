@@ -41,13 +41,12 @@ from io import BytesIO
 from qwen_vl_utils import extract_vision_info
 from transformers import AutoConfig, AutoTokenizer, AutoProcessor
 from qwen_vl.model.vggt.utils.load_fn import load_and_preprocess_images
+# 注意：如果你之前把模型修改写在了 _yuan 文件中，这里请确保导入的是包含了 dist_head 和 topo_head 的类
 from qwen_vl.model.modeling_qwen2_5_vl import Qwen2_5_VLForConditionalGenerationForJanusVLN
 from transformers import AutoProcessor, Qwen2_5_VLForConditionalGeneration
 
-
 min_pixels: int = 28 * 28
 max_pixels: int = 1605632
-
 
 def set_seed(seed: int):
     random.seed(seed)
@@ -56,8 +55,6 @@ def set_seed(seed: int):
     if torch.cuda.is_available():
         torch.cuda.manual_seed(seed)
         torch.cuda.manual_seed_all(seed)
-
-
 
 class VLNEvaluator:
     def __init__(
@@ -120,11 +117,9 @@ class VLNEvaluator:
 
         self.num_history = args.num_history
 
-
     def config_env(self) -> Env:
         env = Env(config=self.config)
         return env
-
 
     def eval_action(self, idx) -> None:
         env = self.config_env()
@@ -134,7 +129,6 @@ class VLNEvaluator:
                 scene_episode_dict[episode.scene_id] = []
             scene_episode_dict[episode.scene_id].append(episode)
 
-        
         sucs, spls, oss, ones = [], [], [], []
         done_res = []
         if os.path.exists(os.path.join(self.output_path, f'result.json')):
@@ -171,7 +165,6 @@ class VLNEvaluator:
                 if should_save_video:
                     os.makedirs(os.path.join(self.output_path, f'vis_{self.epoch}'), exist_ok=True)
                 
-
                 rgb_list = []
                 time_ids = []
                 action_seq = []
@@ -183,22 +176,47 @@ class VLNEvaluator:
                     rgb = observations["rgb"]
                     
                     image = Image.fromarray(rgb).convert('RGB')
-                    rgb_list.append(image)
+                    
+                    # ================== 创新点：获取动态分数与距离 ==================
+                    pred_dist, topo_score = self.model.get_frame_metrics(image)
+                    # 将原来的只存 image 改为存字典
+                    rgb_list.append({
+                        "image": image, 
+                        "score": topo_score, 
+                        "step": step_id, 
+                        "dist": pred_dist
+                    })
+                    # ==============================================================
                     
                     info = env.get_metrics()
                         
                     history_len = len(rgb_list) - 1 
                     
+                    # ================== 创新点：拓扑感知动态记忆管理 ==================
                     if history_len <= self.num_history:
-                        history_images = rgb_list[:history_len]
-                        images = history_images + [rgb_list[-1]]
+                        images = [x["image"] for x in rgb_list]
                     else:
-                        indices = np.linspace(0, history_len, self.num_history + 1, dtype=int)
-                        images = [rgb_list[i] for i in indices]
-                    
+                        current_frame = rgb_list[-1]
+                        history_frames = rgb_list[:-1] # 提取除了当前帧以外的历史帧
+                        
+                        # 根据 topo_score 进行降序排序（门、路口分数最高）
+                        sorted_history = sorted(history_frames, key=lambda x: x["score"], reverse=True)
+                        top_k_history = sorted_history[:self.num_history]
+                        
+                        # 必须按时间(step)重新排序，确保 LLM 序列理解正确
+                        top_k_history = sorted(top_k_history, key=lambda x: x["step"])
+                        images = [x["image"] for x in top_k_history] + [current_frame["image"]]
+                    # ================================================================
                     
                     action = self.model.call_model(images, episode_instruction,step_id)[0]
                     
+                    # ================== 创新点：度量校准早停干预 ==================
+                    cur_pred_dist = rgb_list[-1]["dist"]
+                    if "STOP" in action and cur_pred_dist > 3.0:
+                        print(f"🛑 [干预] 模型输出 STOP，但预测距离为 {cur_pred_dist:.2f}m，强制修改为 MOVE_FORWARD。")
+                        action = "MOVE_FORWARD"
+                    # ==============================================================
+
                     if info['top_down_map'] is not None and should_save_video:
                         frame = observations_to_image({'rgb':observations['rgb']}, info)
                         vis_frames.append(frame)
@@ -241,9 +259,7 @@ class VLNEvaluator:
                     f.write(json.dumps(result) + "\n")
 
         env.close()
-        return torch.tensor(sucs).to(self.device), torch.tensor(spls).to(self.device), torch.tensor(oss).to(self.device), torch.tensor(ones).to(self.device), torch.tensor(len(sucs)).to(self.device)     
-
-
+        return torch.tensor(sucs).to(self.device), torch.tensor(spls).to(self.device), torch.tensor(oss).to(self.device), torch.tensor(ones).to(self.device), torch.tensor(len(sucs)).to(self.device)    
 
 
 class JanusVLN_Inference:
@@ -269,6 +285,27 @@ class JanusVLN_Inference:
         
         self.device = device
 
+    # ================== 创新点：获取单帧度量与拓扑分数 ==================
+    @torch.no_grad()
+    def get_frame_metrics(self, image: Image.Image):
+        """利用已训练的模型头提取当前画面的剩余距离和重要性分数"""
+        inputs = self.processor(images=[image], return_tensors="pt").to(self.device)
+        pixel_values = inputs.pixel_values.type(torch.bfloat16)
+        
+        # 1. 提取底层视觉特征
+        vision_features = self.model.visual(pixel_values, grid_thw=inputs.image_grid_thw)
+        pooled_vision = vision_features.mean(dim=0, keepdim=True)
+        
+        # 2. 预测距离
+        pred_distance = self.model.dist_head(pooled_vision).item()
+        
+        # 3. 计算拓扑分数 (假设 idx 2 是路口，idx 4 是门道)
+        topo_logits = self.model.topo_head(pooled_vision)
+        topo_probs = torch.softmax(topo_logits, dim=-1)
+        topo_score = (topo_probs[0, 2] + topo_probs[0, 4]).item()
+        
+        return pred_distance, topo_score
+    # =================================================================
 
     def call_model(
         self,
@@ -438,7 +475,6 @@ def eval():
     )
 
     evaluate(model, args)
-
 
 
 def evaluate(model, args):
