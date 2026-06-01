@@ -8,7 +8,7 @@
 JanusVLN_Extra/
 JanusVLN_Ablation_NoTopo/
 JanusVLN_Ablation_WithTopo/
-JanusVLN_Base/
+/JanusVLN_Base/
 JanusVLN_StopHead*/
 JanusVLN_Base_DryRun/
 JanusVLN_Overfit_Test_4Cards/
@@ -17,18 +17,18 @@ checkpoints/
 debug_frames/
 habitat-lab/
 evaluation_WithTopo_results/
-evaluation_base/
+/evaluation_base/
 evaluation_extra/
-evaluation_stop_progress/
+/evaluation_stop_progress/
 
 # 2. 忽略数据集和输出结果文件夹（假设你的数据集放在 data 文件夹下）
-data/
+/data/
 datasets/
-outputs/
+/outputs/
 results/
 
 # 3. 忽略日志文件
-logs/
+/logs/
 runs/
 *.log
 
