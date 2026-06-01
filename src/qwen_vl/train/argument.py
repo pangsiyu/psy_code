@@ -13,6 +13,18 @@ class ModelArguments:
     lam: float = field(default=0.2)
     distill_loss_weight: float = field(default=1.0)
     reference_frame: str = field(default="last")
+    add_stop_progress_head: bool = field(default=False)
+    stop_head_hidden_dim: int = field(default=1024)
+    stop_loss_weight: float = field(default=10.0)
+    trainable_scope: str = field(
+        default="default",
+        metadata={
+            "help": (
+                "Trainable parameter scope: default, stop_head_only, stop_head_merger, "
+                "stop_head_lora, stop_head_merger_lora."
+            )
+        },
+    )
 
 
 @dataclass
@@ -43,3 +55,5 @@ class TrainingArguments(transformers.TrainingArguments):
     mm_projector_lr: Optional[float] = None
     vision_tower_lr: Optional[float] = None
     group_by_modality_length: bool = field(default=False)
+    group_by_modality_length_auto: bool = field(default=False)
+    group_by_varlen: bool = field(default=False)

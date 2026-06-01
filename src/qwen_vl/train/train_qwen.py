@@ -20,11 +20,11 @@ import pathlib
 import torch
 import transformers
 import json
-from typing import Dict, Optional # 新增 Optional
+from typing import Dict
 import shutil
 import sys
 from pathlib import Path
-from dataclasses import dataclass, field # 新增 dataclass 相关
+from contextlib import nullcontext
 
 project_root = Path(__file__).parent.parent.parent
 sys.path.append(str(project_root))
@@ -47,16 +47,6 @@ from transformers import AutoTokenizer, AutoProcessor, Qwen2VLImageProcessor, Tr
 
 local_rank = None
 
-# ================= 新增：动态注册无标注数据路径参数 =================
-@dataclass
-class ExtendedDataArguments(DataArguments):
-    unlabeled_data_path: Optional[str] = field(
-        default="./data/topo_pseudo_labels.json",
-        metadata={"help": "Path to the unlabeled pseudo labels for the semi-supervised Topo head."}
-    )
-# ====================================================================
-
-
 def rank0_print(*args):
     if local_rank == 0:
         print(*args)
@@ -75,6 +65,38 @@ def safe_save_model_for_hf_trainer(trainer: transformers.Trainer, output_dir: st
         cpu_state_dict = {key: value.cpu() for key, value in state_dict.items()}
         del state_dict
         trainer._save(output_dir, state_dict=cpu_state_dict)  # noqa
+
+
+def save_stop_progress_head(model, output_dir: str):
+    unwrapped_model = model.module if hasattr(model, "module") else model
+    if not hasattr(unwrapped_model, "stop_progress_head"):
+        return
+
+    rank = torch.distributed.get_rank() if torch.distributed.is_initialized() else 0
+    state_dict = {}
+    for name, param in unwrapped_model.stop_progress_head.named_parameters():
+        gather_context = nullcontext()
+        if hasattr(param, "ds_id"):
+            import deepspeed
+
+            gather_context = deepspeed.zero.GatheredParameters([param], modifier_rank=0)
+        with gather_context:
+            if rank == 0:
+                state_dict[name] = param.detach().cpu().clone()
+
+    if rank == 0:
+        for name, buffer in unwrapped_model.stop_progress_head.named_buffers():
+            state_dict[name] = buffer.detach().cpu().clone()
+        save_path = os.path.join(output_dir, "stop_progress_head.pt")
+        torch.save(
+            {
+                "state_dict": state_dict,
+                "stop_head_hidden_dim": getattr(unwrapped_model.config, "stop_head_hidden_dim", None),
+                "stop_loss_weight": getattr(unwrapped_model.config, "stop_loss_weight", None),
+            },
+            save_path,
+        )
+        print(f"Saved stop_progress_head to {save_path}")
 
 
 def set_model(model_args, model):
@@ -106,20 +128,77 @@ def set_model(model_args, model):
         p.requires_grad = False
     for n, p in model.merger.named_parameters():
         p.requires_grad = True
-        
-    # ================= 新增：解冻半监督拓扑分类头 =================
-    if hasattr(model, "topo_head"):
-        for n, p in model.topo_head.named_parameters():
+    if hasattr(model, "stop_progress_head"):
+        for n, p in model.stop_progress_head.named_parameters():
             p.requires_grad = True
-    # ==============================================================
+        
+
+VALID_TRAINABLE_SCOPES = {
+    "default",
+    "stop_head_only",
+    "stop_head_merger",
+    "stop_head_lora",
+    "stop_head_merger_lora",
+}
+
+
+def _is_merger_param(name: str) -> bool:
+    return name.startswith("merger.") or ".merger." in name
+
+
+def _is_lora_param(name: str) -> bool:
+    return "lora" in name.lower()
+
+
+def print_trainable_parameter_summary(model, scope: str) -> None:
+    total_params = sum(p.numel() for p in model.parameters())
+    trainable_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
+    ratio = 100.0 * trainable_params / total_params if total_params > 0 else 0.0
+    rank0_print(
+        f"Trainable scope: {scope}; trainable params: {trainable_params:,} / "
+        f"{total_params:,} ({ratio:.4f}%)"
+    )
+
+
+def apply_trainable_scope(model, trainable_scope: str):
+    if trainable_scope not in VALID_TRAINABLE_SCOPES:
+        raise ValueError(
+            f"Unknown trainable_scope={trainable_scope}. "
+            f"Choose from {sorted(VALID_TRAINABLE_SCOPES)}."
+        )
+
+    if trainable_scope == "default":
+        print_trainable_parameter_summary(model, trainable_scope)
+        return
+
+    if not hasattr(model, "stop_progress_head"):
+        raise ValueError(
+            f"trainable_scope={trainable_scope} requires add_stop_progress_head=True "
+            "or a checkpoint that already contains stop_progress_head."
+        )
+
+    for _, p in model.named_parameters():
+        p.requires_grad = False
+
+    use_merger = trainable_scope in {"stop_head_merger", "stop_head_merger_lora"}
+    use_lora = trainable_scope in {"stop_head_lora", "stop_head_merger_lora"}
+
+    for name, p in model.named_parameters():
+        trainable = name.startswith("stop_progress_head.")
+        if use_merger and _is_merger_param(name):
+            trainable = True
+        if use_lora and _is_lora_param(name):
+            trainable = True
+        p.requires_grad = trainable
+
+    print_trainable_parameter_summary(model, trainable_scope)
 
 
 def train(attn_implementation="flash_attention_2"):
     global local_rank
 
-    # 使用继承后的 ExtendedDataArguments，让它认识 --unlabeled_data_path
     parser = transformers.HfArgumentParser(
-        (ModelArguments, ExtendedDataArguments, TrainingArguments)
+        (ModelArguments, DataArguments, TrainingArguments)
     )
     model_args, data_args, training_args = parser.parse_args_into_dataclasses()
     set_seed(training_args.seed)
@@ -128,10 +207,29 @@ def train(attn_implementation="flash_attention_2"):
     local_rank = training_args.local_rank
     os.makedirs(training_args.output_dir, exist_ok=True)
 
-    if "qwen2.5" in model_args.model_name_or_path.lower():
+    if model_args.add_stop_progress_head and data_args.data_flatten:
+        raise ValueError(
+            "add_stop_progress_head=True is incompatible with data_flatten=True: "
+            "packed sequence training cannot align per-sample stop_progress targets "
+            "with sample boundaries."
+        )
+
+    config = AutoConfig.from_pretrained(model_args.model_name_or_path)
+    model_type = str(getattr(config, "model_type", "")).lower()
+    architectures = " ".join(getattr(config, "architectures", []) or []).lower()
+    is_qwen25_vl = (
+        "qwen2.5" in model_args.model_name_or_path.lower()
+        or "qwen2_5_vl" in model_type
+        or "qwen2_5_vl" in architectures
+        or "qwen2.5" in architectures
+    )
+
+    if is_qwen25_vl:
         from qwen_vl.model.modeling_qwen2_5_vl import Qwen2_5_VLForConditionalGenerationForJanusVLN
-        config = AutoConfig.from_pretrained(model_args.model_name_or_path)
         setattr(config, "lam", model_args.lam)
+        setattr(config, "add_stop_progress_head", model_args.add_stop_progress_head)
+        setattr(config, "stop_head_hidden_dim", model_args.stop_head_hidden_dim)
+        setattr(config, "stop_loss_weight", model_args.stop_loss_weight)
         model = Qwen2_5_VLForConditionalGenerationForJanusVLN.from_pretrained(
             pretrained_model_name_or_path=model_args.model_name_or_path,
             config=config,
@@ -178,6 +276,7 @@ def train(attn_implementation="flash_attention_2"):
         use_fast=False,
     )
     set_model(model_args, model)
+    apply_trainable_scope(model, model_args.trainable_scope)
 
     if torch.distributed.get_rank() == 0:
         model.visual.print_trainable_parameters()
@@ -194,6 +293,7 @@ def train(attn_implementation="flash_attention_2"):
     else:
         trainer.train()
     trainer.save_state()
+    save_stop_progress_head(trainer.model, training_args.output_dir)
     data_args.image_processor.save_pretrained(training_args.output_dir)
 
     source_path = os.path.join(model_args.model_name_or_path, "chat_template.json")
@@ -202,9 +302,11 @@ def train(attn_implementation="flash_attention_2"):
 
     model.config.use_cache = True
 
-    safe_save_model_for_hf_trainer(trainer=trainer, output_dir=training_args.output_dir)
+    if os.environ.get("JANUSVLN_SAVE_FULL_MODEL", "1") == "0":
+        rank0_print("Skipping full model save because JANUSVLN_SAVE_FULL_MODEL=0.")
+    else:
+        safe_save_model_for_hf_trainer(trainer=trainer, output_dir=training_args.output_dir)
 
 
 if __name__ == "__main__":
-    # === 开启极限省显存形态：使用 Flash Attention 2 ===
     train(attn_implementation="flash_attention_2")

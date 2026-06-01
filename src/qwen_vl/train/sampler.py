@@ -16,6 +16,8 @@ from transformers.trainer_pt_utils import AcceleratorConfig
 from typing import List, Optional
 
 
+_ORIGINAL_TRAINER_GET_TRAIN_SAMPLER = Trainer._get_train_sampler
+
 
 def split_to_even_chunks(indices, lengths, num_chunks):
     """
@@ -251,7 +253,7 @@ def _get_train_sampler(self) -> Optional[torch.utils.data.Sampler]:
             variable_length=True,
         )
     else:
-        return super()._get_train_sampler()
+        return _ORIGINAL_TRAINER_GET_TRAIN_SAMPLER(self)
 
 Trainer._get_train_sampler = _get_train_sampler
 print("Trainer._get_train_sampler replaced with custom implementation.")

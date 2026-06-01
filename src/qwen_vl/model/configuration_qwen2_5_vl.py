@@ -211,6 +211,9 @@ class Qwen2_5_VLConfig(PretrainedConfig):
         attention_dropout=0.0,
         vision_config=None,
         rope_scaling=None,
+        add_stop_progress_head=False,
+        stop_head_hidden_dim=1024,
+        stop_loss_weight=10.0,
         **kwargs,
     ):
         if isinstance(vision_config, dict):
@@ -240,6 +243,9 @@ class Qwen2_5_VLConfig(PretrainedConfig):
         self.rope_theta = rope_theta
         self.attention_dropout = attention_dropout
         self.rope_scaling = rope_scaling
+        self.add_stop_progress_head = add_stop_progress_head
+        self.stop_head_hidden_dim = stop_head_hidden_dim
+        self.stop_loss_weight = stop_loss_weight
 
         # Validate the correctness of rotary position embeddings parameters
         # BC: if there is a 'type' field, move it to 'rope_type'.
